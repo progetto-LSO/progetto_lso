@@ -1,0 +1,21 @@
+\newcommand{\sskip}{\smallskip \\ }
+\newcommand{\meskip}{\medskip \\ }
+\newcommand{\bskip }{\bigskip \\ }
+
+\let\oldchapter\chapter
+\renewcommand{\chapter}[1]{
+    \newpage
+    \begingroup%
+    \let\clearpage\relax% Stop LaTeX from going to a new page
+    \vspace*{\fill}%
+    \oldchapter{#1}
+    \vspace*{\fill}%
+    \endgroup
+    \thispagestyle{empty}
+    \newpage
+}
+\let\oldsection\section
+\renewcommand{\section}[1]{
+    \newpage
+    \oldsection{#1}
+}

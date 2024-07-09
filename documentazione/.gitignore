@@ -1,0 +1,11 @@
+*.dvi
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.xdv
+*.aux
+*.txt
+*.gz
+*.Identifier
