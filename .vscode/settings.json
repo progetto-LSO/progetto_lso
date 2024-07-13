@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "database.h": "c",
+        "stdio.h": "c",
+        "stdlib.h": "c",
+        "libpq-fe.h": "c"
+    }
+}
