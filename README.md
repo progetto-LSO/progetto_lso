@@ -45,3 +45,5 @@ CREATE TABLE loan (
     CONSTRAINT check_loan_validity CHECK (loan_end > loan_start)
 );
 ```
+
+Inserisci libri eseguendo la query del file `book_insert.sql`

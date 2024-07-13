@@ -13,18 +13,16 @@ CC = gcc
 CFLAGS = -I/usr/include/postgresql -lpq
 
 # Obiettivi
-all: clean database server client
+all: clean server client database
 
 server: $(SERVER_BUILD)/server.o
 
 client: $(CLIENT_BUILD)/client.o
 
-database: $(DATABASE_BUILD)/database.o
-
 .PHONY: clean
 
 # Regola generica per compilare i file .c
-$(SERVER_BUILD)/server.o: $(wildcard $(SERVER_SRC)/*.c)
+$(SERVER_BUILD)/server.o: $(wildcard $(SERVER_SRC)/*.c) $(wildcard $(DATABASE_SRC)/*.c)
 	mkdir -p $(SERVER_BUILD)
 	$(CC) -o $@ $^ $(CFLAGS)
 
@@ -32,9 +30,6 @@ $(CLIENT_BUILD)/client.o: $(wildcard $(CLIENT_SRC)/*.c)
 	mkdir -p $(CLIENT_BUILD)
 	$(CC) -o $@ $^ $(CFLAGS)
 
-$(DATABASE_BUILD)/database.o: $(wildcard $(DATABASE_SRC)/*.c)
-	mkdir -p $(DATABASE_BUILD)
-	$(CC) -o $@ $^ $(CFLAGS)
 
 # Pulizia dei file compilati
 clean:
