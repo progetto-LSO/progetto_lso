@@ -15,9 +15,10 @@ Connettiti al database con `\c library`
 Esegui la query 
 ```sql
 CREATE TABLE "user" (
-    user_id SERIAL PRIMARY KEY, 
-    username TEXT UNIQUE NOT NULL, 
-    passw TEXT NOT NULL
+    username TEXT NOT NULL, 
+    passw TEXT NOT NULL,
+
+    CONSTRAINT user_pk PRIMARY KEY (username)
 );
 
 CREATE TABLE book (
@@ -35,11 +36,11 @@ CREATE TABLE loan (
     loan_end TIMESTAMP WITH TIME ZONE  NOT NULL,
     returned TIMESTAMP WITH TIME ZONE,
 
-    user_id SERIAL, 
+    username TEXT, 
     isbn TEXT,
 
-    CONSTRAINT loan_pk PRIMARY KEY (user_id, isbn),
-    CONSTRAINT loan_user_fk FOREIGN KEY (user_id) REFERENCES "user" ON DELETE CASCADE,
+    CONSTRAINT loan_pk PRIMARY KEY (username, isbn),
+    CONSTRAINT loan_user_fk FOREIGN KEY (username) REFERENCES "user" ON DELETE CASCADE,
     CONSTRAINT loan_book_fk FOREIGN KEY (isbn) REFERENCES book ON DELETE CASCADE,
     
     CONSTRAINT check_loan_validity CHECK (loan_end > loan_start)

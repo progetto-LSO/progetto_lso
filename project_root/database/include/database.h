@@ -9,7 +9,7 @@ void disconnect_database();
 
 /* returns 0 if no error occurred, 1 otherwise */
 
-int sign_in(const char *username, const char *password);
+int sign_up(const char *username, const char *password);
 int login(const char *username, const char *password);
 
 int get_books(PGresult **res);

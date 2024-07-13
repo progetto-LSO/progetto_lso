@@ -14,87 +14,82 @@ void connect_database(char *conninfo) {
 }
 
 // registrazione utente sul database, insert into user
-int sign_in(const char *username, const char *password){
+int sign_up(const char *username, const char *password) {
     char query_string[256];
-    PGresult *res = NULL; 
+    PGresult *res = NULL;
 
-    // utilizzo di sprintf per formattare la stringa ed inserirla all'interno del buffer che conterrà l'intera query 
-    sprintf(query_string, 
-        "INSERT INTO public.\"user\" (username, passw) VALUES ('%s', '%s') ", 
-    username, password);
+    // utilizzo di sprintf per formattare la stringa ed inserirla all'interno del buffer che conterrà l'intera query
+    sprintf(query_string,
+            "INSERT INTO public.\"user\" (username, passw) VALUES ('%s', '%s') ",
+            username, password);
 
     printf("Executing Query: %s \n", query_string);
 
-    // esecuzione query 
+    // esecuzione query
     res = PQexec(connection, query_string);
 
     // la query non restituisce tuple, se è andata a buon fine il suo result status dovrebbe essere: PGRES_COMMAND_OK
-    if(PQresultStatus(res) != PGRES_COMMAND_OK){
+    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
         fprintf(stderr, "Query Failed: %s", PQerrorMessage(connection));
         PQclear(res);
-        return 1; 
+        return 1;
     } else {
         PQclear(res);
-        return 0; 
-    } 
-    
+        return 0;
+    }
 }
 
 // login dell'utente sul database, select from user
-int login(const char *username, const char *password){
+int login(const char *username, const char *password) {
     char query_string[256];
-    PGresult *res = NULL; 
+    PGresult *res = NULL;
 
-    // utilizzo di sprintf per formattare la stringa ed inserirla all'interno del buffer che conterrà l'intera query 
-    sprintf(query_string, 
-        "SELECT * from public.\"user\" WHERE username = '%s' AND passw = '%s' ", 
-    username, password);
+    // utilizzo di sprintf per formattare la stringa ed inserirla all'interno del buffer che conterrà l'intera query
+    sprintf(query_string,
+            "SELECT * from public.\"user\" WHERE username = '%s' AND passw = '%s' ",
+            username, password);
 
     printf("Executing Query: %s \n", query_string);
-    
-    // esecuzione query 
-    res = PQexec(connection, query_string); 
+
+    // esecuzione query
+    res = PQexec(connection, query_string);
 
     // la query restituisce tuple, se è andata a buon fine il suo result status dovrebbe essere: PGRES_TUPLES_OK
-    if(PQresultStatus(res) != PGRES_TUPLES_OK){
+    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
         fprintf(stderr, "Query Failed: %s", PQerrorMessage(connection));
         PQclear(res);
-        return 1; 
+        return 1;
+    } else if (PQntuples(res) != 1) {
+        PQclear(res);
+        return 1;
     } else {
         PQclear(res);
-        return 0; 
-    } 
-
+        return 0;
+    }
 }
 
 // salva in res tutti i libri salvati sul dabatase, select from book
-int get_books(PGresult **res){
-
+int get_books(PGresult **res) {
 }
 
 // salva in res tutti i libri per cui la disponibilità non supera il numero di loan effettuati per quel libro
-int search_avaiable_books(PGresult **res){
-
+int search_avaiable_books(PGresult **res) {
 }
 
-// salva in res tutti i libri di un certo genere 
-int search_books_by_genre(PGresult **res, const char *book_genre){
-
+// salva in res tutti i libri di un certo genere
+int search_books_by_genre(PGresult **res, const char *book_genre) {
 }
 
-// salva in res il libro con il nome specificato 
-int search_book_by_name(PGresult **res, const char *book_name){
-
+// salva in res il libro con il nome specificato
+int search_book_by_name(PGresult **res, const char *book_name) {
 }
 
 // crea un prestito per un libro
-int create_loan(const char *ISBN, const char *username){
-
+int create_loan(const char *ISBN, const char *username) {
 }
 
 // aggiorna lo stato del prestito quando il libro viene restituito
-int update_loan(const char *ISBN, const char *username){
-
+int update_loan(const char *ISBN, const char *username) {
 }
 
 /* int main(int argc, char const *argv[]) {
