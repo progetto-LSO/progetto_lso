@@ -21,6 +21,6 @@ int search_books_by_name(PGresult **res, const char *book_name);
 int create_loan(const char *loan_end, const char *ISBN, const char *username);
 
 
-int update_loan(const char *ISBN, const char *username);
+int return_book(int loan_id);
 
 void print_query_result(PGresult *res); 

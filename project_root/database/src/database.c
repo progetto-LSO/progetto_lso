@@ -121,7 +121,7 @@ int search_books_by_genre(PGresult **res, const char *book_genre) {
 
 // salva in res il libro con il nome specificato
 int search_books_by_name(PGresult **res, const char *book_name) {
-    char query_string[256]; 
+    char query_string[256];
 
     sprintf(query_string, "SELECT * FROM book WHERE title ILIKE '%%%s%%' ", book_name);
 
@@ -130,14 +130,13 @@ int search_books_by_name(PGresult **res, const char *book_name) {
     // esecuzione query
     *res = PQexec(connection, query_string);
 
-    if(PQresultStatus(*(res)) != PGRES_TUPLES_OK){
+    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK) {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(*(res));
         return 1;
     } else {
-        return 0; 
+        return 0;
     }
-
 }
 
 // crea un prestito per un libro
@@ -167,7 +166,29 @@ int create_loan(const char *loan_end, const char *ISBN, const char *username) {
 }
 
 // aggiorna lo stato del prestito quando il libro viene restituito
-int update_loan(const char *ISBN, const char *username) {
+int return_book(int loan_id) {
+    char query_string[500];
+    PGresult *res = NULL;
+
+    // utilizzo di sprintf per formattare la stringa ed inserirla all'interno del buffer che conterrà l'intera query
+    sprintf(query_string,
+            "UPDATE loan SET returned = current_timestamp WHERE id = %d",
+            loan_id);
+
+    printf("Executing Query: %s \n", query_string);
+
+    // esecuzione query
+    res = PQexec(connection, query_string);
+
+    // la query non restituisce tuple, se è andata a buon fine il suo result status dovrebbe essere: PGRES_COMMAND_OK
+    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+        fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
+        PQclear(res);
+        return 1;
+    } else {
+        PQclear(res);
+        return 0;
+    }
 }
 
 // dato un generico risultato di una query, ne stampa a video l'intera struttura
