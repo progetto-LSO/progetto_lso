@@ -85,18 +85,8 @@ int get_books(PGresult **res) {
 }
 
 // salva in res tutti i libri per cui la disponibilità non supera il numero di loan effettuati per quel libro
-int search_avaiable_books(PGresult **res) {
-    char *query_string =
-        "SELECT b.*, b.quantity - COALESCE(l.borrowed_quantity, 0) AS available_quantity "
-        "FROM book b "
-        "LEFT JOIN ( "
-        "    SELECT isbn, COUNT(*) AS borrowed_quantity "
-        "    FROM loan "
-        "    WHERE returned IS NULL "
-        "    GROUP BY isbn "
-        ") l ON b.isbn = l.isbn "
-        "WHERE b.quantity > COALESCE(l.borrowed_quantity, 0)"
-        ;
+int search_available_books(PGresult **res) {
+    char *query_string = "SELECT * FROM available_books WHERE available_quantity > 0";
 
     printf("Executing Query: %s \n", query_string);
     *res = PQexec(connection, query_string);

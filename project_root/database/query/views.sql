@@ -1,4 +1,4 @@
-CREATE VIEW available_book AS 
+CREATE OR REPLACE VIEW available_books AS 
     SELECT b.*, b.quantity - COALESCE(l.borrowed_quantity, 0) AS available_quantity 
     FROM book b 
     LEFT JOIN ( 
@@ -6,6 +6,5 @@ CREATE VIEW available_book AS
         FROM loan 
         WHERE returned IS NULL 
         GROUP BY isbn 
-    ) l ON b.isbn = l.isbn 
-    WHERE b.quantity > COALESCE(l.borrowed_quantity, 0)
+    ) l ON b.isbn = l.isbn
 ;

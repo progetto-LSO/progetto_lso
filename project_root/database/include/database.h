@@ -13,7 +13,7 @@ int sign_up(const char *username, const char *password);
 int login(const char *username, const char *password);
 
 int get_books(PGresult **res);
-int search_avaiable_books(PGresult **res);
+int search_available_books(PGresult **res);
 int search_books_by_genre(PGresult **res, const char *book_genre);
 int search_books_by_name(PGresult **res, const char *book_name);
 

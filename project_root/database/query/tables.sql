@@ -25,7 +25,7 @@ CREATE TABLE loan (
     username TEXT, 
     isbn TEXT,
 
-    CONSTRAINT loan_pk PRIMARY KEY id,
+    CONSTRAINT loan_pk PRIMARY KEY (id),
     CONSTRAINT loan_user_fk FOREIGN KEY (username) REFERENCES public."user" ON DELETE CASCADE,
     CONSTRAINT loan_book_fk FOREIGN KEY (isbn) REFERENCES book ON DELETE CASCADE,
     
