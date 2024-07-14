@@ -23,6 +23,16 @@ int main(int argc, char const *argv[]) {
         print_query_result(query_result); 
     }
 
+    result = search_books_by_name(&query_result, "Da Vinci");
+    
+    printf("\n\n");
+
+    if(result != 0){
+        printf("Error from database\n"); 
+    } else {
+        print_query_result(query_result);
+    }
+
     PQclear(query_result);
 
     disconnect_database();

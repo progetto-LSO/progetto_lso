@@ -93,7 +93,24 @@ int search_books_by_genre(PGresult **res, const char *book_genre) {
 }
 
 // salva in res il libro con il nome specificato
-int search_book_by_name(PGresult **res, const char *book_name) {
+int search_books_by_name(PGresult **res, const char *book_name) {
+    char query_string[256]; 
+
+    sprintf(query_string, "SELECT * FROM book WHERE title ILIKE '%%%s%%' ", book_name);
+
+    printf("Executing Query: %s \n", query_string);
+
+    // esecuzione query
+    *res = PQexec(connection, query_string);
+
+    if(PQresultStatus(*(res)) != PGRES_TUPLES_OK){
+        fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
+        PQclear(*(res));
+        return 1;
+    } else {
+        return 0; 
+    }
+
 }
 
 // crea un prestito per un libro
