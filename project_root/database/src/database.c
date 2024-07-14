@@ -73,15 +73,15 @@ int get_books(PGresult **res) {
     char query_string[256] = "SELECT * FROM public.\"book\" ";
 
     printf("Executing Query: %s \n", query_string);
+    *res = PQexec(connection, query_string);
 
-    if(PQresultStatus(*(res)) != PGRES_TUPLES_OK) {
+    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK) {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
-        PQclear(*(res)); 
-        return 1; 
+        PQclear(*(res));
+        return 1;
     }
 
-    return 0; 
-
+    return 0;
 }
 
 // salva in res tutti i libri per cui la disponibilità non supera il numero di loan effettuati per quel libro
@@ -104,15 +104,12 @@ int create_loan(const char *ISBN, const char *username) {
 int update_loan(const char *ISBN, const char *username) {
 }
 
-
 // dato un generico risultato di una query, ne stampa a video l'intera struttura
 void print_query_result(PGresult *res) {
-
     for (int i = 0; i < PQntuples(res); i++) {
         for (int j = 0; j < PQnfields(res); j++) {
             printf("%s\t", PQgetvalue(res, i, j));
         }
         printf("\n");
     }
-
 }
