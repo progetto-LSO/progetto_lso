@@ -30,7 +30,7 @@ int sign_up(const char *username, const char *password) {
 
     // la query non restituisce tuple, se è andata a buon fine il suo result status dovrebbe essere: PGRES_COMMAND_OK
     if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-        fprintf(stderr, "Query Failed: %s", PQerrorMessage(connection));
+        fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(res);
         return 1;
     } else {
@@ -56,7 +56,7 @@ int login(const char *username, const char *password) {
 
     // la query restituisce tuple, se è andata a buon fine il suo result status dovrebbe essere: PGRES_TUPLES_OK
     if (PQresultStatus(res) != PGRES_TUPLES_OK) {
-        fprintf(stderr, "Query Failed: %s", PQerrorMessage(connection));
+        fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(res);
         return 1;
     } else if (PQntuples(res) != 1) {
@@ -70,6 +70,18 @@ int login(const char *username, const char *password) {
 
 // salva in res tutti i libri salvati sul dabatase, select from book
 int get_books(PGresult **res) {
+    char query_string[256] = "SELECT * FROM public.\"book\" ";
+
+    printf("Executing Query: %s \n", query_string);
+
+    if(PQresultStatus(*(res)) != PGRES_TUPLES_OK) {
+        fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
+        PQclear(*(res)); 
+        return 1; 
+    }
+
+    return 0; 
+
 }
 
 // salva in res tutti i libri per cui la disponibilità non supera il numero di loan effettuati per quel libro
@@ -92,36 +104,15 @@ int create_loan(const char *ISBN, const char *username) {
 int update_loan(const char *ISBN, const char *username) {
 }
 
-/* int main(int argc, char const *argv[]) {
-    PGresult *res;
-    int i, j;
 
-    // Connessione al database
-    connection = PQconnectdb("dbname=library user=postgres password=admin host=localhost port=5432");
+// dato un generico risultato di una query, ne stampa a video l'intera struttura
+void print_query_result(PGresult *res) {
 
-    // Controlla se la connessione è andata a buon fine
-    if (PQstatus(connection) != CONNECTION_OK) {
-        fprintf(stderr, "Connection to database failed: %s", PQerrorMessage(connection));
-        exit_nicely(connection);
-    }
-
-    // Esegui una query SELECT
-    get_books(&res);
-
-    // Stampa le righe del risultato
-    for (i = 0; i < PQntuples(res); i++) {
-        for (j = 0; j < PQnfields(res); j++) {
-            printf("%-15s", PQgetvalue(res, i, j));
+    for (int i = 0; i < PQntuples(res); i++) {
+        for (int j = 0; j < PQnfields(res); j++) {
+            printf("%s\t", PQgetvalue(res, i, j));
         }
         printf("\n");
     }
-    printf("%d", PQntuples(res));
 
-    // Libera il risultato
-    PQclear(res);
-
-    // Chiudi la connessione
-    PQfinish(connection);
-
-    return 0;
-} */
+}

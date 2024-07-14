@@ -3,23 +3,27 @@
 int main(int argc, char const *argv[]) {
     connect_database("dbname=library user=postgres password=admin host=localhost port=5432");
 
+    char *username = "Simone";
 
-    int result = login("Simoone", "mypsw");
+    int result = login(username, "mypsw");
 
-    printf("\nQuery Result: %d \n", result);
-    // PGresult *res;
+    if(result == 0){
+        printf("User %s Logged In \n", username); 
+    }
 
-    // get_books(&res);
+    printf("Querying Books...\n");
+    
+    PGresult *query_result; 
 
-    // // Stampa le righe del risultato
-    // for (int i = 0; i < PQntuples(res); i++) {
-    //     for (int j = 0; j < PQnfields(res); j++) {
-    //         printf("%s\t", PQgetvalue(res, i, j));
-    //     }
-    //     printf("\n");
-    // }
+    result = get_books(&query_result);
 
-    // PQclear(res);
+    if(result != 0){
+        printf("Error from database\n"); 
+    } else {
+        print_query_result(query_result); 
+    }
+
+    PQclear(query_result);
 
     disconnect_database();
 

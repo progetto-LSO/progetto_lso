@@ -22,3 +22,5 @@ int create_loan(const char *ISBN, const char *username);
 
 
 int update_loan(const char *ISBN, const char *username);
+
+void print_query_result(PGresult *res); 
