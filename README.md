@@ -12,39 +12,10 @@ CREATE DATABASE library;
 
 Connettiti al database con `\c library`
 
-Esegui la query 
-```sql
-CREATE TABLE "user" (
-    username TEXT NOT NULL, 
-    passw TEXT NOT NULL,
+Inserisci le tabelle eseguendo il codice SQL del file `tables.sql`
 
-    CONSTRAINT user_pk PRIMARY KEY (username)
-);
+Inserisci le view eseguendo il codice SQL del file `views.sql`
 
-CREATE TABLE book (
-    isbn TEXT PRIMARY KEY, 
-    title TEXT UNIQUE NOT NULL, 
-    authors TEXT[] NOT NULL, 
-    genre TEXT[] NOT NULL, 
-    quantity INTEGER NOT NULL,
+Inserisci i trigger eseguendo il codice SQL del file `triggers.sql`
 
-    CONSTRAINT check_quantity_validity CHECK (quantity >= 0)
-);
-
-CREATE TABLE loan (
-    loan_start TIMESTAMP WITH TIME ZONE  NOT NULL  DEFAULT CURRENT_TIMESTAMP,
-    loan_end TIMESTAMP WITH TIME ZONE  NOT NULL,
-    returned TIMESTAMP WITH TIME ZONE,
-
-    username TEXT, 
-    isbn TEXT,
-
-    CONSTRAINT loan_pk PRIMARY KEY (username, isbn),
-    CONSTRAINT loan_user_fk FOREIGN KEY (username) REFERENCES "user" ON DELETE CASCADE,
-    CONSTRAINT loan_book_fk FOREIGN KEY (isbn) REFERENCES book ON DELETE CASCADE,
-    
-    CONSTRAINT check_loan_validity CHECK (loan_end > loan_start)
-);
-```
-
-Inserisci libri eseguendo la query del file `book_insert.sql`
+Inserisci libri eseguendo il codice SQL del file `book_insert.sql`
