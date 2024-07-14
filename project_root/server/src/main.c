@@ -1,41 +1,20 @@
 #include "../../database/include/database.h"
+#include "../include/server.h"
 
 int main(int argc, char const *argv[]) {
-    connect_database("dbname=library user=postgres password=admin host=localhost port=5432");
-
-    char *username = "Simone";
-
-    int result = login(username, "mypsw");
-
-    if(result == 0){
-        printf("User %s Logged In \n", username); 
-    }
-
-    printf("Querying Books...\n");
     
-    PGresult *query_result; 
+    int connection_socket, communication_socket; 
+    struct sockaddr_in server_address;
 
-    result = get_books(&query_result);
+    // Creazione Connection Socket 
+    if((connection_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+        perror("Failed to Create Socket"), exit(EXIT_FAILURE);
 
-    if(result != 0){
-        printf("Error from database\n"); 
-    } else {
-        print_query_result(query_result); 
-    }
+    // Impostazione Indirizzo
+    server_address.sin_family = AF_INET; 
 
-    result = search_books_by_name(&query_result, "Da Vinci");
-    
-    printf("\n\n");
 
-    if(result != 0){
-        printf("Error from database\n"); 
-    } else {
-        print_query_result(query_result);
-    }
-
-    PQclear(query_result);
-
-    disconnect_database();
+    // Binding del Socket
 
     return 0;
 }
