@@ -36,3 +36,7 @@ clean:
 	rm -rf $(SERVER_BUILD)/*
 	rm -rf $(CLIENT_BUILD)/*
 	rm -rf $(DATABASE_BUILD)/*
+
+# Regola per avviare server.o
+run_server: server
+	$(SERVER_BUILD)/server.o
