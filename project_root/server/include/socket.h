@@ -1,8 +1,10 @@
 #include <arpa/inet.h> 
 #include <netinet/in.h> 
 #include <sys/socket.h> 
+#include <stdlib.h> 
+#include <stdio.h>
 
-int address_config(struct sockaddr_in *server_address, const char *ip_address, int port_number);
+void address_config(struct sockaddr_in *server_address, const char *ip_address, int port_number);
 
 int open_socket(int socket); 
 
