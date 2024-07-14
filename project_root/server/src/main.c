@@ -11,11 +11,14 @@ int main(int argc, char const *argv[]) {
     int socket; 
     struct sockaddr_in server_address; 
     
-
     address_config(&server_address, ADDRESS, PORT);
     
-    // open_socket(socket);
+    socket = open_socket();
+
+    bind_socket(socket, &server_address);
 
 
+    close(socket);
+    
     return 0;
 }
