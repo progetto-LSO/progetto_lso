@@ -26,15 +26,19 @@ int main(int argc, char const *argv[]) {
 
     while(1){
         printf("Waiting for connections...\n"); 
-        sleep(1);
         
         dedicate_socket = accept_request_connection(welcoming_socket, &client_address);
 
         if(dedicate_socket > 0){
+            pthread_t tid; 
             successfull_connection_message(&client_address);
 
-            printf("Closing connection...");
-            close(dedicate_socket);
+            // crea un thread per gestire il client
+            client_request_initializer(&tid, &dedicate_socket);
+
+            // non aspetta che il thread termini 
+            pthread_detach(tid); 
+
         } 
 
     }

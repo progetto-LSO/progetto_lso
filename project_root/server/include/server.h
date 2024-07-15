@@ -10,5 +10,7 @@
 #include <netinet/in.h> 
 #include <sys/socket.h> 
 
-#define PORT 8080 
-#define BUFFER_SIZE 1024 
+
+void client_request_initializer(pthread_t *tid, int *client_socket); 
+
+void *client_request_handler(void *socket);

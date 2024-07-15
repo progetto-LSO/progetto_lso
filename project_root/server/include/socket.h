@@ -14,3 +14,4 @@ void bind_socket(int socket, struct sockaddr_in *address);
 int accept_request_connection(int socket, struct sockaddr_in *address); 
 
 void successfull_connection_message(struct sockaddr_in *address);
+
