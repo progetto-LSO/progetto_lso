@@ -3,7 +3,13 @@
         "database.h": "c",
         "stdio.h": "c",
         "stdlib.h": "c",
-        "libpq-fe.h": "c"
+        "libpq-fe.h": "c",
+        "client.h": "c",
+        "inet.h": "c",
+        "signal.h": "c",
+        "unistd.h": "c",
+        "socket.h": "c",
+        "server.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

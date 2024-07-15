@@ -28,7 +28,7 @@ int open_socket() {
     
     int sock; 
 
-    if((sock = socket(PF_INET, SOCK_STREAM, 0)) == 0)
+    if((sock = socket(AF_INET, SOCK_STREAM, 0)) == 0)
         perror("Failed to create Socket"), exit(EXIT_FAILURE);
 
     return sock; 

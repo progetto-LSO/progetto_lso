@@ -40,3 +40,7 @@ clean:
 # Regola per avviare server.o
 run_server: server
 	$(SERVER_BUILD)/server.o
+
+# Regola per avviare client.o
+run_client: client
+	$(CLIENT_BUILD)/client.o
