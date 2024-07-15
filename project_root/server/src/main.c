@@ -4,21 +4,43 @@
 
 #define ADDRESS "127.0.0.1"
 #define PORT 8080 
-
+#define MAX_LISTEN_QUEUE 10 
 
 int main(int argc, char const *argv[]) {
     
-    int socket; 
+    int welcoming_socket; 
+    int dedicate_socket; 
     struct sockaddr_in server_address; 
+    struct sockaddr_in client_address; 
     
+    // configurazione del socket
     address_config(&server_address, ADDRESS, PORT);
+    welcoming_socket = open_socket();
+    bind_socket(welcoming_socket, &server_address);
+
+    // listen delle connessioni in ingresso 
+    if(listen(welcoming_socket, MAX_LISTEN_QUEUE) == -1)
+        perror("Failed to listen"), exit(EXIT_FAILURE);
     
-    socket = open_socket();
+    printf("Server is listening on Port:%d \n", PORT); 
 
-    bind_socket(socket, &server_address);
+    while(1){
+        printf("Waiting for connections...\n"); 
+        sleep(1);
+        
+        dedicate_socket = accept_request_connection(welcoming_socket, &client_address);
+
+        if(dedicate_socket > 0){
+            successfull_connection_message(&client_address);
+
+            printf("Closing connection...");
+            close(dedicate_socket);
+        } 
+
+    }
 
 
-    close(socket);
-    
+    close(welcoming_socket);
+
     return 0;
 }
