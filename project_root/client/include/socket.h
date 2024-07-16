@@ -7,6 +7,6 @@
 
 int open_socket();
 
-void connection_to_server(int client_socket);
+void connection_to_server(int client_socket, struct sockaddr_in *server_address);
 
 void bind_socket(int socket, struct sockaddr_in *address); 

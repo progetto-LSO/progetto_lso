@@ -5,7 +5,7 @@
 #include "../include/server.h"
 #include "../include/socket.h"
 
-#include "../../config/address.config.h"
+#include "../../config/address_config.h"
 
 int welcoming_socket;
 

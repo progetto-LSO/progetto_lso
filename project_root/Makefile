@@ -6,14 +6,15 @@ CLIENT_SRC = client/src
 CLIENT_BUILD = client/build
 
 DATABASE_SRC = database/src
-DATABASE_BUILD = database/build
+
+CONFIG_SRC = config
 
 # Compilatore e flag
 CC = gcc
 CFLAGS = -I/usr/include/postgresql -lpq
 
 # Obiettivi
-all: clean server client database
+all: clean server client
 
 server: $(SERVER_BUILD)/server.o
 
@@ -22,11 +23,11 @@ client: $(CLIENT_BUILD)/client.o
 .PHONY: clean
 
 # Regola generica per compilare i file .c
-$(SERVER_BUILD)/server.o: $(wildcard $(SERVER_SRC)/*.c) $(wildcard $(DATABASE_SRC)/*.c)
+$(SERVER_BUILD)/server.o: $(wildcard $(SERVER_SRC)/*.c) $(wildcard $(DATABASE_SRC)/*.c) $(wildcard $(CONFIG_SRC)/*.c)
 	mkdir -p $(SERVER_BUILD)
 	$(CC) -o $@ $^ $(CFLAGS)
 
-$(CLIENT_BUILD)/client.o: $(wildcard $(CLIENT_SRC)/*.c)
+$(CLIENT_BUILD)/client.o: $(wildcard $(CLIENT_SRC)/*.c) $(wildcard $(CONFIG_SRC)/*.c)
 	mkdir -p $(CLIENT_BUILD)
 	$(CC) -o $@ $^ $(CFLAGS)
 
@@ -35,7 +36,6 @@ $(CLIENT_BUILD)/client.o: $(wildcard $(CLIENT_SRC)/*.c)
 clean:
 	rm -rf $(SERVER_BUILD)/*
 	rm -rf $(CLIENT_BUILD)/*
-	rm -rf $(DATABASE_BUILD)/*
 
 # Regola per avviare server.o
 run_server: server

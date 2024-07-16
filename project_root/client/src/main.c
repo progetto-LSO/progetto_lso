@@ -1,7 +1,7 @@
 #include <signal.h>
+#include <unistd.h>
 
-#include "../../config/address.config.h"
-
+#include "../../config/address_config.h"
 #include "../include/client.h"
 #include "../include/socket.h"
 
@@ -24,14 +24,14 @@ int main(int argc, char const *argv[]) {
 
     struct sockaddr_in server_address;
 
-    // configurazione indirizzo server 
+    // configurazione indirizzo server
     address_config(&server_address, SERVER_ADDRESS, SERVER_PORT);
 
-    // creazione client socket 
+    // creazione client socket
     client_socket = open_socket();
 
     // Connessione al server
-    connection_to_server(); 
+    connection_to_server(client_socket, &server_address);
 
     login();
 
@@ -66,7 +66,7 @@ int main(int argc, char const *argv[]) {
                 return_book();
                 break;
             case 6:
-                close(socket_fd);
+                close(client_socket);
                 exit(EXIT_SUCCESS);
                 break;
             default:
