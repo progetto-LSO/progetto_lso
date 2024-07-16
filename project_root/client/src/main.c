@@ -38,20 +38,20 @@ int main(int argc, char const *argv[]) {
     while (1) {
         system("clear");
 
-        printf("-------- MENU --------\n");
+        printf("---------- MENU ----------\n");
         printf("1. Esplora catalogo\n");
         printf("2. Cerca libro per nome\n");
         printf("3. Cerca libro per genere\n");
         printf("4. Richiedi prestito\n");
-        printf("5. Restituisci libro\n");
+        printf("5. Visualizza prestiti\n");
         printf("6. Esci\n");
-        printf("----------------------\n");
+        printf("--------------------------\n");
         printf("Inserisci la tua scelta: ");
         scanf("%d", &scelta);
 
         switch (scelta) {
             case 1:
-                explore_catalog();
+                explore_catalog(client_socket);
                 break;
             case 2:
                 search_book_by_name();
@@ -60,7 +60,7 @@ int main(int argc, char const *argv[]) {
                 search_book_by_genre();
                 break;
             case 4:
-                request_loan();
+                view_loans();
                 break;
             case 5:
                 return_book();

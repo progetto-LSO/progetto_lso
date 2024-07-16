@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <string.h>
 
 #define STRING_BUFFER_LENGTH 256
 
@@ -7,13 +10,13 @@ extern char username[STRING_BUFFER_LENGTH];
 
 void login();
 
-void explore_catalog();
+void explore_catalog(int socket);
 
 void search_book_by_name();
 
 void search_book_by_genre();
 
-void request_loan();
+void view_loans();
 
 void return_book();
 

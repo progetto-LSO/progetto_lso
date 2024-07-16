@@ -12,7 +12,9 @@
         "server.h": "c",
         "address.config.h": "c",
         "address_config.h": "c",
-        "stddef.h": "c"
+        "stddef.h": "c",
+        "types.h": "c",
+        "string.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

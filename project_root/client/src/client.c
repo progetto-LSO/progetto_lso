@@ -1,6 +1,5 @@
 #include "../include/client.h"
 
-
 void login() {
     int logged;
 
@@ -24,7 +23,11 @@ void login() {
     }
 }
 
-void explore_catalog() {
+void explore_catalog(int socket) {
+    char *buffer = "del testo";
+    ssize_t result = send(socket, (char *)buffer, strlen(buffer), 0);
+    if (result == -1)
+        perror("Error to send message");
 }
 
 void search_book_by_name() {
@@ -33,7 +36,7 @@ void search_book_by_name() {
 void search_book_by_genre() {
 }
 
-void request_loan() {
+void view_loans() {
 }
 
 void return_book() {
