@@ -1,14 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <string.h>
+#include <unistd.h>
+#include "../../config/request_config.h"
 
 #define STRING_BUFFER_LENGTH 256
 
 extern char username[STRING_BUFFER_LENGTH];
 
-void login();
+// 0: sign in success
+// 1: sign in failed
+int sign_in(int client_socket);
+
+// 0: sign up success
+// 1: sign up failed
+int sign_up(int client_socket);
+
+void show_auth_menu(int client_socket);
 
 void explore_catalog(int socket);
 

@@ -1,11 +1,10 @@
 #include <signal.h>
 #include <unistd.h>
 
+#include "../../config/address_config.h"
 #include "../../database/include/database.h"
 #include "../include/server.h"
 #include "../include/socket.h"
-
-#include "../../config/address_config.h"
 
 int welcoming_socket;
 
@@ -26,7 +25,7 @@ int main(int argc, char const *argv[]) {
     struct sockaddr_in server_address;
     struct sockaddr_in client_address;
 
-    // configurazione indirizzo server 
+    // configurazione indirizzo server
     address_config(&server_address, SERVER_ADDRESS, SERVER_PORT);
     // configurazione del socket
     welcoming_socket = open_socket();
@@ -37,6 +36,8 @@ int main(int argc, char const *argv[]) {
         perror("Failed to listen"), exit(EXIT_FAILURE);
 
     printf("Server is listening on: %s:%d \n", SERVER_ADDRESS, SERVER_PORT);
+
+    connect_database("host=localhost port=5432 dbname=library user=postgres password=admin");
 
     while (1) {
         printf("Waiting for connections...\n");
@@ -56,6 +57,6 @@ int main(int argc, char const *argv[]) {
     }
 
     close(welcoming_socket);
-
+    disconnect_database();
     return 0;
 }

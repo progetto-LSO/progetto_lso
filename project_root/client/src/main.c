@@ -5,10 +5,10 @@
 #include "../include/client.h"
 #include "../include/socket.h"
 
-int client_socket;
+static int client_socket;
 
 void sig_handler(int signo) {
-    if (signo == SIGINT || signo == SIGTERM) {
+    if (signo == SIGINT || signo == SIGTERM || signo == SIGKILL) {
         printf("Exiting... closing socket.\n");
         close(client_socket);  // Chiude il socket prima di uscire
         exit(0);
@@ -19,6 +19,7 @@ int main(int argc, char const *argv[]) {
     // Imposta il gestore di segnali per SIGINT e SIGTERM
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
+    signal(SIGKILL, sig_handler);
 
     int scelta;
 
@@ -33,7 +34,7 @@ int main(int argc, char const *argv[]) {
     // Connessione al server
     connection_to_server(client_socket, &server_address);
 
-    login();
+    show_auth_menu(client_socket);
 
     while (1) {
         system("clear");
@@ -44,8 +45,7 @@ int main(int argc, char const *argv[]) {
         printf("3. Cerca libro per genere\n");
         printf("4. Richiedi prestito\n");
         printf("5. Visualizza prestiti\n");
-        printf("6. Esci\n");
-        printf("--------------------------\n");
+        printf("6. Esci\n\n");
         printf("Inserisci la tua scelta: ");
         scanf("%d", &scelta);
 

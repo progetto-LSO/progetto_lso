@@ -1,5 +1,7 @@
 #include "../include/database.h"
 
+PGconn *connection = NULL;
+
 void disconnect_database() {
     PQfinish(connection);
 }
@@ -40,7 +42,7 @@ int sign_up(const char *username, const char *password) {
 }
 
 // login dell'utente sul database, select from user
-int login(const char *username, const char *password) {
+int sign_in(const char *username, const char *password) {
     char query_string[256];
     PGresult *res = NULL;
 

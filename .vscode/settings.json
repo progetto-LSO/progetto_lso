@@ -14,7 +14,10 @@
         "address_config.h": "c",
         "stddef.h": "c",
         "types.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "request_type.enum.h": "c",
+        "request_config.h": "c",
+        "in.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
