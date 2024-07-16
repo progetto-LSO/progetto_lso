@@ -13,8 +13,8 @@ int sign_in(int client_socket) {
 
     int request_type = SIGN_IN;
 
-    char _username[STRING_BUFFER_LENGTH];
-    char password[STRING_BUFFER_LENGTH];
+    char _username[MAX_REQUEST_BUFFER_LENGTH];
+    char password[MAX_REQUEST_BUFFER_LENGTH];
 
     printf("-------- SIGN IN --------\n");
     printf("Username: ");
@@ -27,11 +27,11 @@ int sign_in(int client_socket) {
         return 1;
     }
 
-    if ((send(client_socket, (char *)_username, strlen(_username), 0)) == -1) {
+    if ((send(client_socket, (char *)_username, MAX_REQUEST_BUFFER_LENGTH, 0)) == -1) {
         perror("Error to send message");
         return 1;
     }
-    if ((send(client_socket, (char *)password, strlen(password), 0)) == -1) {
+    if ((send(client_socket, (char *)password, MAX_REQUEST_BUFFER_LENGTH, 0)) == -1) {
         perror("Error to send message");
         return 1;
     }
@@ -57,8 +57,8 @@ int sign_up(int client_socket) {
 
     int request_type = SIGN_UP;
 
-    char _username[STRING_BUFFER_LENGTH];
-    char password[STRING_BUFFER_LENGTH];
+    char _username[MAX_REQUEST_BUFFER_LENGTH];
+    char password[MAX_REQUEST_BUFFER_LENGTH];
 
     printf("-------- SIGN UP --------\n");
     printf("Username: ");
@@ -71,11 +71,12 @@ int sign_up(int client_socket) {
         return 1;
     }
 
-    if ((send(client_socket, (char *)_username, strlen(_username), 0)) == -1) {
+    if ((send(client_socket, (char *)_username, MAX_REQUEST_BUFFER_LENGTH, 0)) == -1) {
         perror("Error to send message");
         return 1;
     }
-    if ((send(client_socket, (char *)password, strlen(password), 0)) == -1) {
+
+    if ((send(client_socket, (char *)password, MAX_REQUEST_BUFFER_LENGTH, 0)) == -1) {
         perror("Error to send message");
         return 1;
     }
@@ -98,6 +99,7 @@ int sign_up(int client_socket) {
 
 void show_auth_menu(int client_socket) {
     int scelta;
+    int result;
 
     while (1) {
         system("clear");
@@ -111,7 +113,7 @@ void show_auth_menu(int client_socket) {
         system("clear");
         switch (scelta) {
             case 1:
-                int result = sign_up(client_socket);
+                result = sign_up(client_socket);
 
                 if (result == 0) {
                     printf("Registrazione effettuata con successo\n\n");
@@ -124,9 +126,9 @@ void show_auth_menu(int client_socket) {
 
                 break;
             case 2:
-                sign_in(client_socket);
+                result = sign_in(client_socket);
 
-                if (result) {
+                if (result == 0) {
                     printf("Accesso effettuato con successo\n\n");
                     press_key_to_continue();
                     return;

@@ -41,6 +41,7 @@ void handle_signin(int client_socket) {
 
     username_recv = recv(client_socket, (char *)username, MAX_REQUEST_BUFFER_LENGTH, 0);
     password_recv = recv(client_socket, (char *)password, MAX_REQUEST_BUFFER_LENGTH, 0);
+
     if (username_recv == -1 || password_recv == -1) {
         perror("Error to receive message");
         return;
