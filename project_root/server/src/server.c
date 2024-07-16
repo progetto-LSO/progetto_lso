@@ -1,5 +1,51 @@
 #include "../include/server.h"
 
+void handle_signup(int client_socket);
+void handle_signin(int client_socket);
+
+// crea un thread dedicato per gestire un singolo client che ha effettuato la connessione al server
+void client_request_initializer(pthread_t *tid, int *client_socket) {
+    if ((pthread_create(tid, NULL, client_request_handler, (void *)client_socket)) != 0)
+        perror("Create new Thread Failed"), exit(EXIT_FAILURE);
+}
+
+// gestione della richiesta del client da parte del thread creato, quando il client ha concluso la sua esecuzione il socket viene chiuso
+void *client_request_handler(void *socket) {
+    // casting per recuperare il valore del socket descriptor (la funzione da passare a pthread_create vuole per forza un agormento di tipo puntatore a void)
+    int client_socket = *(int *)socket;
+
+    int request_type;
+
+    while (1) {
+        ssize_t result = recv(client_socket, (int *)&request_type, sizeof(request_type), 0);
+        if (result == -1) {
+            perror("Error to receive message");
+            continue;
+        } else if (result == 0) {
+            // Il client ha chiuso la connessione
+            printf("Client disconnected.\n");
+            break;
+        }
+
+        switch (request_type) {
+            case SIGN_UP:
+                handle_signup(client_socket);
+                break;
+
+            case SIGN_IN:
+                handle_signin(client_socket);
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    printf("Closing Connection...\n");
+    close(client_socket);
+    return NULL;
+}
+
 void handle_signup(int client_socket) {
     // 0: if signup succeed
     // 1: otherwise
@@ -54,47 +100,4 @@ void handle_signin(int client_socket) {
     signin_result = sign_in(username, password);
 
     send(client_socket, (int *)&signin_result, sizeof(signin_result), 0);
-}
-
-// crea un thread dedicato per gestire un singolo client che ha effettuato la connessione al server
-void client_request_initializer(pthread_t *tid, int *client_socket) {
-    if ((pthread_create(tid, NULL, client_request_handler, (void *)client_socket)) != 0)
-        perror("Create new Thread Failed"), exit(EXIT_FAILURE);
-}
-
-// gestione della richiesta del client da parte del thread creato, quando il client ha concluso la sua esecuzione il socket viene chiuso
-void *client_request_handler(void *socket) {
-    // casting per recuperare il valore del socket descriptor (la funzione da passare a pthread_create vuole per forza un agormento di tipo puntatore a void)
-    int client_socket = *(int *)socket;
-
-    int request_type;
-
-    while (1) {
-        ssize_t result = recv(client_socket, (int *)&request_type, sizeof(request_type), 0);
-        if (result == -1) {
-            perror("Error to receive message");
-            continue;
-        } else if (result == 0) {
-            // Il client ha chiuso la connessione
-            printf("Client disconnected.\n");
-            break;
-        }
-
-        switch (request_type) {
-            case SIGN_UP:
-                handle_signup(client_socket);
-                break;
-
-            case SIGN_IN:
-                handle_signin(client_socket);
-                break;
-
-            default:
-                break;
-        }
-    }
-
-    printf("Closing Connection...\n");
-    close(client_socket);
-    return NULL;
 }
