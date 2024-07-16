@@ -5,9 +5,7 @@
 #include "../include/server.h"
 #include "../include/socket.h"
 
-#define ADDRESS "127.0.0.1"
-#define PORT 8080
-#define MAX_LISTEN_QUEUE 1
+#include "../../config/address.config.h"
 
 int welcoming_socket;
 
@@ -28,8 +26,9 @@ int main(int argc, char const *argv[]) {
     struct sockaddr_in server_address;
     struct sockaddr_in client_address;
 
+    // configurazione indirizzo server 
+    address_config(&server_address, SERVER_ADDRESS, SERVER_PORT);
     // configurazione del socket
-    address_config(&server_address, ADDRESS, PORT);
     welcoming_socket = open_socket();
     bind_socket(welcoming_socket, &server_address);
 
@@ -37,7 +36,7 @@ int main(int argc, char const *argv[]) {
     if (listen(welcoming_socket, MAX_LISTEN_QUEUE) == -1)
         perror("Failed to listen"), exit(EXIT_FAILURE);
 
-    printf("Server is listening on Port:%d \n", PORT);
+    printf("Server is listening on: %s:%d \n", SERVER_ADDRESS, SERVER_PORT);
 
     while (1) {
         printf("Waiting for connections...\n");

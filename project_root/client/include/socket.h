@@ -1,0 +1,12 @@
+#include <arpa/inet.h> 
+#include <netinet/in.h> 
+#include <sys/socket.h> 
+#include <stdlib.h> 
+#include <stdio.h>
+#include <unistd.h>
+
+int open_socket();
+
+void connection_to_server(int client_socket);
+
+void bind_socket(int socket, struct sockaddr_in *address); 

@@ -1,10 +1,10 @@
 #include "../include/client.h"
 
-char username[STRING_BUFFER_LENGTH];
 
 void login() {
     int logged;
 
+    char username[STRING_BUFFER_LENGTH];
     char password[STRING_BUFFER_LENGTH];
 
     while (1) {

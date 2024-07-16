@@ -1,22 +1,16 @@
-#include <arpa/inet.h>
-#include <netinet/in.h>
 #include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <unistd.h>
+
+#include "../../config/address.config.h"
 
 #include "../include/client.h"
+#include "../include/socket.h"
 
-#define ADDRESS "127.0.0.1"
-#define PORT 8080
-
-int socket_fd;
+int client_socket;
 
 void sig_handler(int signo) {
     if (signo == SIGINT || signo == SIGTERM) {
         printf("Exiting... closing socket.\n");
-        close(socket_fd);  // Chiude il socket prima di uscire
+        close(client_socket);  // Chiude il socket prima di uscire
         exit(0);
     }
 }
@@ -30,18 +24,14 @@ int main(int argc, char const *argv[]) {
 
     struct sockaddr_in server_address;
 
-    if ((socket_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
-        perror("Socket creation failed"), exit(EXIT_FAILURE);
-    }
+    // configurazione indirizzo server 
+    address_config(&server_address, SERVER_ADDRESS, SERVER_PORT);
 
-    server_address.sin_family = AF_INET;
-    server_address.sin_port = htons(PORT);
-    server_address.sin_addr.s_addr = inet_addr(ADDRESS);
+    // creazione client socket 
+    client_socket = open_socket();
 
-    // Connect to server
-    if (connect(socket_fd, (struct sockaddr *)&server_address, sizeof(server_address)) == -1) {
-        perror("Connection failed"), exit(EXIT_FAILURE);
-    }
+    // Connessione al server
+    connection_to_server(); 
 
     login();
 
