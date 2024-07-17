@@ -99,8 +99,13 @@ int get_books(PGresult **res) {
 
 // salva in res tutti i libri per cui la disponibilità non supera il numero di loan effettuati per quel libro
 int search_available_books(PGresult **res) {
-    char *query_string = "SELECT * FROM available_books WHERE available_quantity > 0";
-
+    char *query_string =
+        "SELECT json_agg(row) "
+        "FROM ( "
+        "    SELECT * FROM public.available_books "
+        "    WHERE available_quantity > 0 "
+        "    ORDER BY isbn ASC "
+        ") as row; ";
     printf("Executing Query: %s \n", query_string);
     *res = PQexec(connection, query_string);
 
@@ -118,7 +123,12 @@ int search_books_by_genre(PGresult **res, const char *book_genre) {
     char query[256];
 
     sprintf(query,
-            "SELECT * FROM book WHERE LOWER('%s') = ANY(SELECT LOWER(unnest(texts)))",
+            "SELECT json_agg(row) "
+            "FROM ( "
+            "   SELECT * "
+            "   FROM book "
+            "   WHERE LOWER('%s') = ANY(SELECT LOWER(unnest(texts))) "
+            ") as row; ",
             book_genre);
 
     *res = PQexec(connection, query);
@@ -136,7 +146,14 @@ int search_books_by_genre(PGresult **res, const char *book_genre) {
 int search_books_by_name(PGresult **res, const char *book_name) {
     char query_string[256];
 
-    sprintf(query_string, "SELECT * FROM book WHERE title ILIKE '%%%s%%' ", book_name);
+    sprintf(query_string,
+            "SELECT json_agg(row) "
+            "FROM ( "
+            "   SELECT * "
+            "   FROM book "
+            "   WHERE title ILIKE '%%%s%%' "
+            ") as row; ",
+            book_name);
 
     printf("Executing Query: %s \n", query_string);
 
