@@ -13,7 +13,7 @@
     Ingenito Roberto - N86004077\\
     Ingenito Simone - N86004063\\
     Sequino Lorenzo - N86004367 
-    }
+   }
 \date{}
 
 
@@ -26,12 +26,87 @@
 \input{settings/table_of_contents.tex}
 
 \newpage
+\chapter{Analisi dei requisiti}
+\section{Obiettivo del progetto}
+\section{Funzionalità principali}
+\subsection{Registrazione e login utenti}
+\subsection{Gestione del catalogo dei libri}
+\subsection{Prestito di libri}
+\subsection{Gestione del carrello e check-out}
+\subsection{Notifiche agli utenti}
 
-\chapter{Capitolo}
-\section{Sezione}
-\subsection{Sotto sezione}
+\chapter{Implementazione}
+\section{Linguaggi di programmazione utilizzati}
+C e SQL
+
+\section{Struttura del codice}
+scrivere come sono strutturate le cartelle, cosa c'è all'interno e il motivo di queste scelte
+
+
+
+\section{Registrazione e login}
+\subsection*{Client}
+\subsection*{Server}
+
+\section{Gestione dei libri e del catalogo}
+\subsection*{Client}
+\subsection*{Server}
+
+\section{Prestito e restituzione libri}
+\subsection*{Client}
+\subsection*{Server}
+
+\section{Carrello e check-out}
+\subsection*{Client}
+\subsection*{Server}
+
+\section{Gestione delle notifiche}
+\subsection*{Client}
+\subsection*{Server}
+
+
+
+
+
+\chapter{Database}
+\section{Schema}
+\begin{tikzpicture}
+	% User table
+	\begin{class}[text width=6cm]{user}{0,-7}
+		\attribute{username: TEXT}
+		\attribute{passw: TEXT}
+	\end{class}
+
+	% Book table
+	\begin{class}[text width=7cm]{book}{10,-7}
+		\attribute{isbn: TEXT}
+		\attribute{title: TEXT}
+		\attribute{authors: TEXT[]}
+		\attribute{genre: TEXT[]}
+		\attribute{quantity: INTEGER}
+	\end{class}
+
+	% Loan table
+	\begin{class}[text width=8cm]{loan}{5,0}
+		\attribute{id: SERIAL}
+		\attribute{loan\_start: TIMESTAMP WITH TIME ZONE}
+		\attribute{loan\_end: TIMESTAMP WITH TIME ZONE}
+		\attribute{returned: TIMESTAMP WITH TIME ZONE}
+		\attribute{username: TEXT}
+		\attribute{isbn: TEXT}
+	\end{class}
+
+	% Relationships
+	\association{user}{}{~\qquad0..*}{loan}{1..1\qquad~}{}
+	\association{book}{}{0..*\qquad~}{loan}{~\qquad1..1}{}
+\end{tikzpicture}
+
+\section{Descrizione delle tabelle}
+\section{Query principali utilizzate}
 
 
 \end{document}
+
+
 
 

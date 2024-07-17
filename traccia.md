@@ -12,5 +12,4 @@ Il libraio dovrà contattare con un messaggio un cliente che non ha restituito i
 
 - Registrazione può essere sviluppata tramite database sql o file
 - I libri possono essere gestiti in un database, json, etc..
-- Opzionale: La ricerca di un libro può essere fatta per genere, nome oppure da lista di quelli
-disponibili
+- Opzionale: La ricerca di un libro può essere fatta per genere, nome oppure da lista di quelli disponibili
