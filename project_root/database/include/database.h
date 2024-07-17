@@ -1,4 +1,4 @@
-#include <libpq-fe.h>  // sudo apt-get install libpq-dev
+#include <libpq-fe.h>
 #include <stdio.h>
 #include <stdlib.h>
 

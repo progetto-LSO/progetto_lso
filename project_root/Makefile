@@ -11,7 +11,7 @@ CONFIG_SRC = config
 
 # Compilatore e flag
 CC = gcc
-CFLAGS = -I/usr/include/postgresql -lpq
+CFLAGS = -I/usr/include/postgresql -lpq -lcjson
 
 # Obiettivi
 all: clean server client
