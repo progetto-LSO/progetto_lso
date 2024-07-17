@@ -37,7 +37,7 @@ int main(int argc, char const *argv[]) {
 
     printf("Server is listening on: %s:%d \n", SERVER_ADDRESS, SERVER_PORT);
 
-    connect_database("host=localhost port=5432 dbname=library user=postgres password=admin");
+    connect_database();
 
     while (1) {
         printf("Waiting for connections...\n");

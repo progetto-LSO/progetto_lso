@@ -4,7 +4,7 @@
 
 extern PGconn *connection;
 
-void connect_database(char *db_info);
+void connect_database();
 void disconnect_database();
 
 /* returns 0 if no error occurred, 1 otherwise */

@@ -1,13 +1,19 @@
 #include "../include/database.h"
 
+#include "../../config/database_config.h"
+
 PGconn *connection = NULL;
 
 void disconnect_database() {
     PQfinish(connection);
 }
 
-void connect_database(char *conninfo) {
-    connection = PQconnectdb(conninfo);
+void connect_database() {
+    char conn_info[256];
+    sprintf(conn_info,
+            "host=%s port=%s dbname=%s user=%s password=%s",
+            DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD);
+    connection = PQconnectdb(conn_info);
     if (PQstatus(connection) != CONNECTION_OK) {
         fprintf(stderr, "Connection to database failed: %s\n", PQerrorMessage(connection));
         disconnect_database();
