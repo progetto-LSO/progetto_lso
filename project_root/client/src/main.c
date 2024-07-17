@@ -52,18 +52,23 @@ int main(int argc, char const *argv[]) {
         switch (scelta) {
             case 1:
                 explore_catalog(client_socket);
+                press_key_to_continue();
                 break;
             case 2:
                 search_book_by_name();
+                press_key_to_continue();
                 break;
             case 3:
                 search_book_by_genre();
+                press_key_to_continue();
                 break;
             case 4:
                 view_loans();
+                press_key_to_continue();
                 break;
             case 5:
                 return_book();
+                press_key_to_continue();
                 break;
             case 6:
                 close(client_socket);

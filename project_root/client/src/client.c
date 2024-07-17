@@ -102,7 +102,7 @@ void show_auth_menu(int client_socket) {
     int result;
 
     while (1) {
-        system("clear");
+        // system("clear");
         printf("----- AUTH MENU -----\n");
         printf("1. Registrati\n");
         printf("2. Accedi\n");
@@ -148,11 +148,44 @@ void show_auth_menu(int client_socket) {
     }
 }
 
-void explore_catalog(int socket) {
-    char *buffer = "del testo";
-    ssize_t result = send(socket, (char *)buffer, strlen(buffer), 0);
-    if (result == -1)
+void explore_catalog(int client_socket) {
+    int request_type = EXPLORE_CATALOG;
+
+    if ((send(client_socket, (int *)&request_type, sizeof(request_type), 0)) == -1) {
         perror("Error to send message");
+        return;
+    }
+
+    char buffer[MAX_REQUEST_BUFFER_LENGTH];
+    char *message = NULL;
+    size_t total_received = 0;
+    ssize_t received;
+
+    while ((received = recv(client_socket, buffer, MAX_REQUEST_BUFFER_LENGTH, 0)) > 0) {
+        char *temp = realloc(message, total_received + received + 1);  // +1 for the null terminator
+        if (temp == NULL) {
+            perror("realloc");
+            free(message);
+            return;
+        }
+        message = temp;
+
+        memcpy(message + total_received, buffer, received);
+        total_received += received;
+
+        if (received < MAX_REQUEST_BUFFER_LENGTH) {
+            break;
+        }
+    }
+
+    if (received == -1) {
+        perror("recv");
+        free(message);
+        return;
+    }
+    message[total_received] = '\0';  // Null terminate the final string
+
+    free(message);
 }
 
 void search_book_by_name() {

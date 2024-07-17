@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+
 #include "../../config/request_config.h"
 
 #define STRING_BUFFER_LENGTH 256
@@ -29,6 +30,8 @@ void search_book_by_genre();
 void view_loans();
 
 void return_book();
+
+void press_key_to_continue();
 
 /* int sign_up(const char *username, const char *password);
 int login(const char *username, const char *password);

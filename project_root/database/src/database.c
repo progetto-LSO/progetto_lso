@@ -78,7 +78,12 @@ int sign_in(const char *username, const char *password) {
 
 // salva in res tutti i libri salvati sul dabatase, select from book
 int get_books(PGresult **res) {
-    char query_string[256] = "SELECT * FROM book";
+    char query_string[256] =
+        "SELECT json_agg(row) "
+        "FROM ( "
+        "    SELECT * FROM public.available_books "
+        "    ORDER BY isbn ASC "
+        ") as row; ";
 
     printf("Executing Query: %s \n", query_string);
     *res = PQexec(connection, query_string);

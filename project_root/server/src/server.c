@@ -2,6 +2,7 @@
 
 void handle_signup(int client_socket);
 void handle_signin(int client_socket);
+void handle_explore_catalog(int client_socket);
 
 // crea un thread dedicato per gestire un singolo client che ha effettuato la connessione al server
 void client_request_initializer(pthread_t *tid, int *client_socket) {
@@ -34,6 +35,10 @@ void *client_request_handler(void *socket) {
 
             case SIGN_IN:
                 handle_signin(client_socket);
+                break;
+
+            case EXPLORE_CATALOG:
+                handle_explore_catalog(client_socket);
                 break;
 
             default:
@@ -100,4 +105,25 @@ void handle_signin(int client_socket) {
     signin_result = sign_in(username, password);
 
     send(client_socket, (int *)&signin_result, sizeof(signin_result), 0);
+}
+
+void handle_explore_catalog(int client_socket) {
+    PGresult *query_result;
+
+    int result = get_books(&query_result);
+
+    char *json_result = PQgetvalue(query_result, 0, 0);
+
+    size_t message_length = strlen(json_result);
+    size_t total_sent = 0;
+
+    while (total_sent < message_length) {
+        size_t to_send = (message_length - total_sent) > MAX_REQUEST_BUFFER_LENGTH ? MAX_REQUEST_BUFFER_LENGTH : (message_length - total_sent);
+        ssize_t sent = send(client_socket, json_result + total_sent, to_send, 0);
+        if (sent == -1) {
+            perror("send");
+            break;
+        }
+        total_sent += sent;
+    }
 }
