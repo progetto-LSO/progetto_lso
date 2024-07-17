@@ -40,7 +40,51 @@
 C e SQL
 
 \section{Struttura del codice}
-scrivere come sono strutturate le cartelle, cosa c'è all'interno e il motivo di queste scelte
+Il progetto è organizzato in una struttura di cartelle che separa logicamente i vari componenti del progetto.\\
+Questa organizzazione aiuta a mantenere il codice pulito, modulare e facile da gestire.\meskip
+Di seguito, è riportata la struttura gerarchica delle cartelle:
+\begin{verbatim}
+    project_root
+    +-- client
+    |   +-- build
+    |   +-- include
+    |   +-- src
+    +-- config
+    +-- database
+    |   +-- include
+    |   +-- query
+    |   +-- src
+    +-- server
+        +-- build
+        +-- include
+        +-- src
+\end{verbatim}
+
+\subsubsection*{\underline{client / server}}
+Le cartelle \texttt{client} e \texttt{server} hanno la stessa struttura:
+\begin{itemize}
+	\item \texttt{\textbf{build}}: Contiene i file oggetto generati dalla compilazione del codice contenuto in \texttt{src}
+	\item \texttt{\textbf{include}}: Contiene i file header
+	\item \texttt{\textbf{src}}: Contiene il codice sorgente
+\end{itemize}
+La separazione tra \texttt{include} e \texttt{src} permette una chiara distinzione tra le interfacce e le implementazioni, migliorando la manutenibilità del codice. \\
+La cartella build isola i file generati dalla compilazione, mantenendo pulito il repository.
+
+\subsubsection*{\underline{config}}
+Questa cartella possiede dei file di configurazione con implementazioni comuni sia per il \textit{client} che per il \textit{server}.\\
+Ad esempio la configurazione del database, le richieste che client e server possono (rispettivamente) fare e ricevere, oppure la configurazione degli indirizzi.\meskip
+Centralizzare le configurazioni in una cartella dedicata facilita la gestione delle impostazioni del sistema e permette di modificare facilmente i parametri di configurazione senza dover cercare all'interno del codice sorgente.
+
+\subsubsection*{\underline{database}}
+\begin{itemize}
+	\item \texttt{\textbf{include}}: Contiene i file header per la gestione del database.
+	\item \texttt{\textbf{query}}: Contiene i file SQL utilizzati per la gestione del database. (Creazione delle tabelle, trigger, funzioni, viste, \dots)
+	\item \texttt{\textbf{src}}: Contiene il codice sorgente per l'interazione con il database.
+\end{itemize}
+La separazione dei file SQL e del codice sorgente relativo al database aiuta a mantenere organizzate le operazioni di gestione del database e facilita eventuali modifiche o aggiornamenti.
+
+
+
 
 
 
