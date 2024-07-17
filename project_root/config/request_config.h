@@ -4,4 +4,9 @@ enum RequestType {
     SIGN_UP,
     SIGN_IN,
     EXPLORE_CATALOG,
+    SEARCH_AVAIABLE, 
+    SEARCH_BY_NAME, 
+    SEARCH_BY_GENRE, 
+    MAKE_LOAN,
+    RETURN_BOOK, 
 };
