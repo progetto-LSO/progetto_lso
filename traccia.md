@@ -6,7 +6,9 @@ Lo studente dovrà realizzare la simulazione di un sistema che modella una libre
 - Gli utenti possono prendere in prestito un numero K di libri, dove K è deciso dal libraio.
 - Gli utenti mettono nel carrello tutti i libri presi in prestito e poi possono effettuare il check-out.
 
-Se un altro utente nel frattempo ha preso l'ultima copia disponibile di quel libro, l'altro utente riceverà un messaggio. Il libraio dovrà contattare con un messaggio un cliente che non ha restituito il libro dopo la scadenza prevista per la restituzione.
+Se un altro utente nel frattempo ha preso l'ultima copia disponibile di quel libro, l'altro utente riceverà un messaggio. 
+
+Il libraio dovrà contattare con un messaggio un cliente che non ha restituito il libro dopo la scadenza prevista per la restituzione.
 
 - Registrazione può essere sviluppata tramite database sql o file
 - I libri possono essere gestiti in un database, json, etc..
