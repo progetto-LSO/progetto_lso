@@ -3,7 +3,7 @@
 char username[STRING_BUFFER_LENGTH];
 
 void press_key_to_continue() {
-    printf("Premi un tasto per continuare...");
+    printf("Premi invio per continuare...");
     getchar();  // Per assorbire il newline rimasto nel buffer
     getchar();  // Per aspettare l'invio da parte dell'utente
 }
