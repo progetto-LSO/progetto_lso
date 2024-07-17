@@ -41,4 +41,5 @@ make
 sudo make install
 cd ../../
 rm -rf cJSON
+sudo ldconfig -v
 ```

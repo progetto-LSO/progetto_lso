@@ -1,15 +1,15 @@
 #include "../include/server.h"
 
-// db functions 
+// db functions
 void handle_signup(int client_socket);
 void handle_signin(int client_socket);
 void handle_explore_catalog(int client_socket);
-void handle_search_available_books(int client socket);
-void handle_search_book_by_name(int client_socket); 
-void handle_search_books_by_genre(int client_socket); 
+void handle_search_available_books(int client_socket);
+void handle_search_book_by_name(int client_socket);
+void handle_search_books_by_genre(int client_socket);
 
-// send db result to client 
-void getJSONResultAndSend(int socket, PGresult *query_result);
+// send db result to client
+void getJSONResultAndSend(int client_socket, PGresult **query_result);
 
 // crea un thread dedicato per gestire un singolo client che ha effettuato la connessione al server
 void client_request_initializer(pthread_t *tid, int *client_socket) {
@@ -48,17 +48,17 @@ void *client_request_handler(void *socket) {
                 handle_explore_catalog(client_socket);
                 break;
 
-            case SEARCH_AVAILABLE_BOOKS: 
+            case SEARCH_AVAILABLE_BOOKS:
                 handle_search_available_books(client_socket);
-                break; 
+                break;
 
-            case SEARCH_BOOK_BY_NAME: 
+            case SEARCH_BOOK_BY_NAME:
                 handle_search_book_by_name(client_socket);
-                break; 
+                break;
 
             case SEARCH_BOOK_BY_GENRE:
                 handle_search_books_by_genre(client_socket);
-                break; 
+                break;
 
             default:
                 break;
@@ -126,12 +126,12 @@ void handle_signin(int client_socket) {
     send(client_socket, (int *)&signin_result, sizeof(signin_result), 0);
 }
 
-void getJSONResultAndSend(int socket, PGresult *query_result){
-    size_t message_length = 0; 
-    size_t total_sent = 0; 
-    char *json_result = NULL; 
+void getJSONResultAndSend(int client_socket, PGresult **query_result) {
+    size_t message_length = 0;
+    size_t total_sent = 0;
+    char *json_result = NULL;
 
-    json_result = PQgetvalue(query_result, 0, 0);
+    json_result = PQgetvalue(*query_result, 0, 0);
     message_length = strlen(json_result);
 
     while (total_sent < message_length) {
@@ -143,48 +143,43 @@ void getJSONResultAndSend(int socket, PGresult *query_result){
         }
         total_sent += sent;
     }
-
 }
-
 
 void handle_explore_catalog(int client_socket) {
     PGresult *query_result;
-    int result = 0; 
-    
+    int result = 0;
+
     result = get_books(&query_result);
 
-    if(result == 1){ // query failed, send 1 to client to say "Query Failed"
-        send(client_socket, (int *)&result, sizeof(result), 0);
-    } else {
-        send(client_socket, (int *)&result, sizeof(result), 0)
-        getJSONResultAndSend(socket, &query_result);
-    }
-
-}
-
-void handle_search_available_books(int client socket){
-    PGresult *query_result; 
-    int result = 0; 
-
-    int result = search_available_books(&query_result);
-
-    if(result == 1){ // query failed, send 1 to client to say "Query Failed"
+    if (result == 1) {  // query failed, send 1 to client to say "Query Failed"
         send(client_socket, (int *)&result, sizeof(result), 0);
     } else {
         send(client_socket, (int *)&result, sizeof(result), 0);
-        getJSONResultAndSend(socket, &query_result);
+        getJSONResultAndSend(client_socket, &query_result);
     }
-
 }
 
+void handle_search_available_books(int client_socket) {
+    PGresult *query_result;
+    int result = 0;
 
-void handle_search_book_by_name(int client_socket){
-    PGresult *query_result; 
+    result = search_available_books(&query_result);
+
+    if (result == 1) {  // query failed, send 1 to client to say "Query Failed"
+        send(client_socket, (int *)&result, sizeof(result), 0);
+    } else {
+        send(client_socket, (int *)&result, sizeof(result), 0);
+        getJSONResultAndSend(client_socket, &query_result);
+    }
+}
+
+void handle_search_book_by_name(int client_socket) {
+    PGresult *query_result;
     char book_name[MAX_REQUEST_BUFFER_LENGTH];
-    int query_status = 0; 
-    size_t book_name_recv; 
+    int query_status = 0;
+    size_t book_name_recv;
 
-    // wait for user to send the book name 
+    // wait for user to send the book name
     book_name_recv = recv(client_socket, (char *)book_name, MAX_REQUEST_BUFFER_LENGTH, 0);
 
     if (book_name_recv == -1) {
@@ -197,24 +192,22 @@ void handle_search_book_by_name(int client_socket){
     }
 
     // query database
-    int query_status = search_books_by_name(&query_result, book_name);
+    query_status = search_books_by_name(&query_result, book_name);
 
     // send query result to the client
-    if(query_status == 1){ // query failed, send 1 to client to say "Query Failed"
+    if (query_status == 1) {  // query failed, send 1 to client to say "Query Failed"
         send(client_socket, (int *)&query_status, sizeof(query_status), 0);
     } else {
         send(client_socket, (int *)&query_status, sizeof(query_status), 0);
-        getJSONResultAndSend(socket, &query_result);
+        getJSONResultAndSend(client_socket, &query_result);
     }
-
 }
 
-
-void handle_search_books_by_genre(int client_socket){
-    PGresult *query_result; 
+void handle_search_books_by_genre(int client_socket) {
+    PGresult *query_result;
     char book_genre[MAX_REQUEST_BUFFER_LENGTH];
-    int query_status = 0; 
-    size_t book_genre_recv; 
+    int query_status = 0;
+    size_t book_genre_recv;
 
     // wait for user to send the book genre
     book_genre_recv = recv(client_socket, (char *)book_genre, MAX_REQUEST_BUFFER_LENGTH, 0);
@@ -229,13 +222,13 @@ void handle_search_books_by_genre(int client_socket){
     }
 
     // query database
-    int query_status = search_books_by_genre(&query_result, book_genre);
+    query_status = search_books_by_genre(&query_result, book_genre);
 
     // send query result to the client
-    if(query_status == 1){ // query failed, send 1 to client to say "Query Failed"
+    if (query_status == 1) {  // query failed, send 1 to client to say "Query Failed"
         send(client_socket, (int *)&query_status, sizeof(query_status), 0);
     } else {
         send(client_socket, (int *)&query_status, sizeof(query_status), 0);
-        getJSONResultAndSend(socket, &query_result);
+        getJSONResultAndSend(client_socket, &query_result);
     }
 }

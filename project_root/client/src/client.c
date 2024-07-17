@@ -150,6 +150,7 @@ void show_auth_menu(int client_socket) {
 
 void explore_catalog(int client_socket) {
     int request_type = EXPLORE_CATALOG;
+    int db_result;
 
     if ((send(client_socket, (int *)&request_type, sizeof(request_type), 0)) == -1) {
         perror("Error to send message");
@@ -160,6 +161,19 @@ void explore_catalog(int client_socket) {
     char *message = NULL;
     size_t total_received = 0;
     ssize_t received;
+
+    // controlla se la query è stata eseguita correttamente
+    ssize_t result = recv(client_socket, (int *)&db_result, sizeof(db_result), 0);
+    if (result == -1) {
+        perror("Error to receive message");
+        return;
+    }
+
+    // query fallita
+    if (db_result == 1) {
+        printf("Errore nell'esecuzione della query\n");
+        return;
+    }
 
     while ((received = recv(client_socket, buffer, MAX_REQUEST_BUFFER_LENGTH, 0)) > 0) {
         char *temp = realloc(message, total_received + received + 1);  // +1 for the null terminator
@@ -184,6 +198,66 @@ void explore_catalog(int client_socket) {
         return;
     }
     message[total_received] = '\0';  // Null terminate the final string
+
+    // parse the JSON data
+    cJSON *json = cJSON_Parse(message);
+    if (json == NULL) {
+        const char *error_ptr = cJSON_GetErrorPtr();
+        if (error_ptr != NULL) {
+            printf("Error: %s\n", error_ptr);
+        }
+        cJSON_Delete(json);
+        return;
+    }
+
+    // Iterazione attraverso gli oggetti nell'array
+    cJSON *item;
+    cJSON_ArrayForEach(item, json) {
+        cJSON *isbn = cJSON_GetObjectItemCaseSensitive(item, "isbn");
+        cJSON *title = cJSON_GetObjectItemCaseSensitive(item, "title");
+        cJSON *authors = cJSON_GetObjectItemCaseSensitive(item, "authors");
+        cJSON *genre = cJSON_GetObjectItemCaseSensitive(item, "genre");
+        cJSON *quantity = cJSON_GetObjectItemCaseSensitive(item, "quantity");
+        cJSON *available_quantity = cJSON_GetObjectItemCaseSensitive(item, "available_quantity");
+
+        if (cJSON_IsString(isbn) && cJSON_IsString(title) && cJSON_IsArray(authors) &&
+            cJSON_IsArray(genre) && cJSON_IsNumber(quantity) && cJSON_IsNumber(available_quantity)) {
+            // Stampa delle informazioni
+            printf("ISBN: %s\n", isbn->valuestring);
+            printf("Titolo: %s\n", title->valuestring);
+
+            // Stampa degli autori
+            printf("Autori: ");
+            cJSON *author;
+            cJSON_ArrayForEach(author, authors) {
+                printf("%s", author->valuestring);
+                if (author->next != NULL) {
+                    printf(", ");
+                }
+            }
+            printf("\n");
+
+            // Stampa del genere
+            printf("Genere: ");
+            cJSON *genre_item;
+            cJSON_ArrayForEach(genre_item, genre) {
+                printf("%s", genre_item->valuestring);
+                if (genre_item->next != NULL) {
+                    printf(", ");
+                }
+            }
+            printf("\n");
+
+            // Stampa della quantità disponibile e totale
+            printf("Quantità totale: %d\n", quantity->valueint);
+            printf("Quantità disponibile: %d\n", available_quantity->valueint);
+
+            printf("\n");
+        }
+    }
+
+    // delete the JSON object
+    cJSON_Delete(json);
 
     free(message);
 }
