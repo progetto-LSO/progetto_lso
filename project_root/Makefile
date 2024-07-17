@@ -37,10 +37,16 @@ clean:
 	rm -rf $(SERVER_BUILD)/*
 	rm -rf $(CLIENT_BUILD)/*
 
+clean_server:
+	rm -rf $(SERVER_BUILD)/*
+
+clean_client:
+	rm -rf $(CLIENT_BUILD)/*
+
 # Regola per avviare server.o
-run_server: server
+run_server: clean_server server
 	$(SERVER_BUILD)/server.o
 
 # Regola per avviare client.o
-run_client: client
+run_client: clean_client client
 	$(CLIENT_BUILD)/client.o
