@@ -2,6 +2,61 @@
 
 char username[STRING_BUFFER_LENGTH];
 
+void search_book_by(int client_socket, int search_type);
+void print_array_books(cJSON *json);
+char *recv_and_compose_segmented_string(int client_socket);
+
+void print_array_books(cJSON *json) {
+    printf("\n\n");
+
+    // Iterazione attraverso gli oggetti nell'array json
+    // il quale stampa la lista dei libri
+    cJSON *item;
+    cJSON_ArrayForEach(item, json) {
+        cJSON *isbn = cJSON_GetObjectItemCaseSensitive(item, "isbn");
+        cJSON *title = cJSON_GetObjectItemCaseSensitive(item, "title");
+        cJSON *authors = cJSON_GetObjectItemCaseSensitive(item, "authors");
+        cJSON *genre = cJSON_GetObjectItemCaseSensitive(item, "genre");
+        cJSON *quantity = cJSON_GetObjectItemCaseSensitive(item, "quantity");
+        cJSON *available_quantity = cJSON_GetObjectItemCaseSensitive(item, "available_quantity");
+
+        if (cJSON_IsString(isbn) && cJSON_IsString(title) && cJSON_IsArray(authors) &&
+            cJSON_IsArray(genre) && cJSON_IsNumber(quantity) && cJSON_IsNumber(available_quantity)) {
+            // Stampa delle informazioni
+            printf("ISBN: %s\n", isbn->valuestring);
+            printf("Titolo: %s\n", title->valuestring);
+
+            // Stampa degli autori
+            printf("Autori: ");
+            cJSON *author;
+            cJSON_ArrayForEach(author, authors) {
+                printf("%s", author->valuestring);
+                if (author->next != NULL) {
+                    printf(", ");
+                }
+            }
+            printf("\n");
+
+            // Stampa del genere
+            printf("Genere: ");
+            cJSON *genre_item;
+            cJSON_ArrayForEach(genre_item, genre) {
+                printf("%s", genre_item->valuestring);
+                if (genre_item->next != NULL) {
+                    printf(", ");
+                }
+            }
+            printf("\n");
+
+            // Stampa della quantità disponibile e totale
+            printf("Quantità totale: %d\n", quantity->valueint);
+            printf("Quantità disponibile: %d\n", available_quantity->valueint);
+
+            printf("\n");
+        }
+    }
+}
+
 // riceve una stringa e se questa è più grande del buffer
 // rimane in ascolto finché non termina di leggere
 //
@@ -184,12 +239,70 @@ void show_auth_menu(int client_socket) {
 }
 
 void explore_catalog(int client_socket) {
-    int request_type = EXPLORE_CATALOG;
+    search_book_by(client_socket, 2);
+}
+
+void search_book_by_name(int client_socket) {
+    search_book_by(client_socket, 0);
+}
+
+void search_book_by_genre(int client_socket) {
+    search_book_by(client_socket, 1);
+}
+
+// search type:
+// - 0: search by name
+// - 1: search by genre
+// - 2: search by nothing, get all catalog
+// - default: search by name
+void search_book_by(int client_socket, int search_type) {
+    int request_type;
     int db_result;
+    char search_key[MAX_REQUEST_BUFFER_LENGTH];
+
+    switch (search_type) {
+        default:
+        case 0:
+            request_type = SEARCH_BOOK_BY_NAME;
+            break;
+        case 1:
+            request_type = SEARCH_BOOK_BY_GENRE;
+            break;
+        case 2:
+            request_type = EXPLORE_CATALOG;
+            break;
+    }
+
+    switch (search_type) {
+        default:
+        case 0:
+            printf("Inserisci il nome del libro: ");
+            scanf("%s", search_key);
+            break;
+        case 1:
+            printf("Inserisci il genere del libro: ");
+            scanf("%s", search_key);
+            break;
+        case 2:
+            break;
+    }
 
     if ((send(client_socket, (int *)&request_type, sizeof(request_type), 0)) == -1) {
         perror("Error to send message");
         return;
+    }
+
+    switch (search_type) {
+        default:
+        case 0:
+        case 1:
+            if ((send(client_socket, (char *)search_key, MAX_REQUEST_BUFFER_LENGTH, 0)) == -1) {
+                perror("Error to send message");
+                return;
+            }
+            break;
+        case 2:
+            break;
     }
 
     // controlla se la query è stata eseguita correttamente
@@ -218,63 +331,14 @@ void explore_catalog(int client_socket) {
         return;
     }
 
-    // Iterazione attraverso gli oggetti nell'array json
-    // il quale stampa la lista dei libri
-    cJSON *item;
-    cJSON_ArrayForEach(item, json) {
-        cJSON *isbn = cJSON_GetObjectItemCaseSensitive(item, "isbn");
-        cJSON *title = cJSON_GetObjectItemCaseSensitive(item, "title");
-        cJSON *authors = cJSON_GetObjectItemCaseSensitive(item, "authors");
-        cJSON *genre = cJSON_GetObjectItemCaseSensitive(item, "genre");
-        cJSON *quantity = cJSON_GetObjectItemCaseSensitive(item, "quantity");
-        cJSON *available_quantity = cJSON_GetObjectItemCaseSensitive(item, "available_quantity");
+    print_array_books(json);
 
-        if (cJSON_IsString(isbn) && cJSON_IsString(title) && cJSON_IsArray(authors) &&
-            cJSON_IsArray(genre) && cJSON_IsNumber(quantity) && cJSON_IsNumber(available_quantity)) {
-            // Stampa delle informazioni
-            printf("ISBN: %s\n", isbn->valuestring);
-            printf("Titolo: %s\n", title->valuestring);
-
-            // Stampa degli autori
-            printf("Autori: ");
-            cJSON *author;
-            cJSON_ArrayForEach(author, authors) {
-                printf("%s", author->valuestring);
-                if (author->next != NULL) {
-                    printf(", ");
-                }
-            }
-            printf("\n");
-
-            // Stampa del genere
-            printf("Genere: ");
-            cJSON *genre_item;
-            cJSON_ArrayForEach(genre_item, genre) {
-                printf("%s", genre_item->valuestring);
-                if (genre_item->next != NULL) {
-                    printf(", ");
-                }
-            }
-            printf("\n");
-
-            // Stampa della quantità disponibile e totale
-            printf("Quantità totale: %d\n", quantity->valueint);
-            printf("Quantità disponibile: %d\n", available_quantity->valueint);
-
-            printf("\n");
-        }
-    }
+    printf("Libri trovati: %d\n", cJSON_GetArraySize(json));
 
     // delete the JSON object
     cJSON_Delete(json);
 
     free(message);
-}
-
-void search_book_by_name() {
-}
-
-void search_book_by_genre() {
 }
 
 void view_loans() {

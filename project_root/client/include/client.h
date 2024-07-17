@@ -22,11 +22,11 @@ int sign_up(int client_socket);
 
 void show_auth_menu(int client_socket);
 
-void explore_catalog(int socket);
+void explore_catalog(int client_socket);
 
-void search_book_by_name();
+void search_book_by_name(int client_socket);
 
-void search_book_by_genre();
+void search_book_by_genre(int client_socket);
 
 void view_loans();
 

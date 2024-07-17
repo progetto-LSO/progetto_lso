@@ -126,8 +126,8 @@ int search_books_by_genre(PGresult **res, const char *book_genre) {
             "SELECT coalesce(json_agg(row), '[]'::json) "
             "FROM ( "
             "   SELECT * "
-            "   FROM book "
-            "   WHERE LOWER('%s') = ANY(SELECT LOWER(unnest(texts))) "
+            "   FROM public.available_books "
+            "   WHERE LOWER('%s') = ANY(SELECT LOWER(unnest(genre))) "
             ") as row; ",
             book_genre);
 
@@ -150,7 +150,7 @@ int search_books_by_name(PGresult **res, const char *book_name) {
             "SELECT coalesce(json_agg(row), '[]'::json) "
             "FROM ( "
             "   SELECT * "
-            "   FROM book "
+            "   FROM public.available_books "
             "   WHERE title ILIKE '%%%s%%' "
             ") as row; ",
             book_name);

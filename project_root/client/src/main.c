@@ -55,11 +55,11 @@ int main(int argc, char const *argv[]) {
                 press_key_to_continue();
                 break;
             case 2:
-                search_book_by_name();
+                search_book_by_name(client_socket);
                 press_key_to_continue();
                 break;
             case 3:
-                search_book_by_genre();
+                search_book_by_genre(client_socket);
                 press_key_to_continue();
                 break;
             case 4:
