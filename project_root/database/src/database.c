@@ -79,10 +79,10 @@ int sign_in(const char *username, const char *password) {
 // salva in res tutti i libri salvati sul dabatase, select from book
 int get_books(PGresult **res) {
     char query_string[256] =
-        "SELECT json_agg(row) "
+        "SELECT coalesce(json_agg(row), '[]'::json) "
         "FROM ( "
         "    SELECT * FROM public.available_books "
-        "    ORDER BY isbn ASC "
+        "    ORDER BY isbn ASC"
         ") as row; ";
 
     printf("Executing Query: %s \n", query_string);
@@ -100,7 +100,7 @@ int get_books(PGresult **res) {
 // salva in res tutti i libri per cui la disponibilità non supera il numero di loan effettuati per quel libro
 int search_available_books(PGresult **res) {
     char *query_string =
-        "SELECT json_agg(row) "
+        "SELECT coalesce(json_agg(row), '[]'::json) "
         "FROM ( "
         "    SELECT * FROM public.available_books "
         "    WHERE available_quantity > 0 "
@@ -123,7 +123,7 @@ int search_books_by_genre(PGresult **res, const char *book_genre) {
     char query[256];
 
     sprintf(query,
-            "SELECT json_agg(row) "
+            "SELECT coalesce(json_agg(row), '[]'::json) "
             "FROM ( "
             "   SELECT * "
             "   FROM book "
@@ -147,7 +147,7 @@ int search_books_by_name(PGresult **res, const char *book_name) {
     char query_string[256];
 
     sprintf(query_string,
-            "SELECT json_agg(row) "
+            "SELECT coalesce(json_agg(row), '[]'::json) "
             "FROM ( "
             "   SELECT * "
             "   FROM book "
