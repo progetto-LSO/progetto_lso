@@ -2,6 +2,41 @@
 
 char username[STRING_BUFFER_LENGTH];
 
+// riceve una stringa e se questa è più grande del buffer
+// rimane in ascolto finché non termina di leggere
+//
+// Restituisce la stringa completa
+char *recv_and_compose_segmented_string(int client_socket) {
+    char buffer[MAX_REQUEST_BUFFER_LENGTH];
+    char *message = NULL;
+    size_t total_received = 0;
+    ssize_t received;
+
+    while ((received = recv(client_socket, buffer, MAX_REQUEST_BUFFER_LENGTH, 0)) > 0) {
+        char *temp = realloc(message, total_received + received + 1);  // +1 for the null terminator
+        if (temp == NULL) {
+            perror("realloc");
+            free(message);
+            return NULL;
+        }
+        message = temp;
+
+        memcpy(message + total_received, buffer, received);
+        total_received += received;
+
+        if (received < MAX_REQUEST_BUFFER_LENGTH) break;
+    }
+
+    if (received == -1) {
+        perror("recv");
+        free(message);
+        return NULL;
+    }
+    message[total_received] = '\0';  // Null terminate the final string
+
+    return message;
+}
+
 void press_key_to_continue() {
     printf("Premi invio per continuare...");
     getchar();  // Per assorbire il newline rimasto nel buffer
@@ -157,11 +192,6 @@ void explore_catalog(int client_socket) {
         return;
     }
 
-    char buffer[MAX_REQUEST_BUFFER_LENGTH];
-    char *message = NULL;
-    size_t total_received = 0;
-    ssize_t received;
-
     // controlla se la query è stata eseguita correttamente
     ssize_t result = recv(client_socket, (int *)&db_result, sizeof(db_result), 0);
     if (result == -1) {
@@ -175,29 +205,7 @@ void explore_catalog(int client_socket) {
         return;
     }
 
-    while ((received = recv(client_socket, buffer, MAX_REQUEST_BUFFER_LENGTH, 0)) > 0) {
-        char *temp = realloc(message, total_received + received + 1);  // +1 for the null terminator
-        if (temp == NULL) {
-            perror("realloc");
-            free(message);
-            return;
-        }
-        message = temp;
-
-        memcpy(message + total_received, buffer, received);
-        total_received += received;
-
-        if (received < MAX_REQUEST_BUFFER_LENGTH) {
-            break;
-        }
-    }
-
-    if (received == -1) {
-        perror("recv");
-        free(message);
-        return;
-    }
-    message[total_received] = '\0';  // Null terminate the final string
+    char *message = recv_and_compose_segmented_string(client_socket);
 
     // parse the JSON data
     cJSON *json = cJSON_Parse(message);
@@ -210,7 +218,8 @@ void explore_catalog(int client_socket) {
         return;
     }
 
-    // Iterazione attraverso gli oggetti nell'array
+    // Iterazione attraverso gli oggetti nell'array json
+    // il quale stampa la lista dei libri
     cJSON *item;
     cJSON_ArrayForEach(item, json) {
         cJSON *isbn = cJSON_GetObjectItemCaseSensitive(item, "isbn");
