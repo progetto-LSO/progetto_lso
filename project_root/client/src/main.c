@@ -43,7 +43,7 @@ int main() {
         printf("1. Esplora catalogo\n");
         printf("2. Cerca libro per nome\n");
         printf("3. Cerca libro per genere\n");
-        printf("4. Richiedi prestito\n");
+        printf("4. Richiedi prestiti\n");
         printf("5. Visualizza prestiti\n");
         printf("6. Esci\n\n");
         printf("Inserisci la tua scelta: ");
