@@ -1,6 +1,6 @@
 #include "../include/database.h"
 
-#include "../../config/database_config.h"
+
 
 PGconn *connection = NULL;
 
@@ -169,32 +169,6 @@ int search_books_by_name(PGresult **res, const char *book_name) {
     }
 }
 
-// crea un prestito per un libro
-int create_loan(const char *loan_end, const char *ISBN, const char *username) {
-    char query_string[500];
-    PGresult *res = NULL;
-
-    // utilizzo di sprintf per formattare la stringa ed inserirla all'interno del buffer che conterrà l'intera query
-    sprintf(query_string,
-            "INSERT INTO loan (loan_start, loan_end, returned, username, isbn) VALUES (current_timestamp, '%s', NULL, '%s', '%s') ",
-            loan_end, username, ISBN);
-
-    printf("Executing Query: %s \n", query_string);
-
-    // esecuzione query
-    res = PQexec(connection, query_string);
-
-    // la query non restituisce tuple, se è andata a buon fine il suo result status dovrebbe essere: PGRES_COMMAND_OK
-    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-        fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
-        PQclear(res);
-        return 1;
-    } else {
-        PQclear(res);
-        return 0;
-    }
-}
-
 // aggiorna lo stato del prestito quando il libro viene restituito
 int return_book(int loan_id) {
     char query_string[500];
@@ -231,11 +205,30 @@ void print_query_result(PGresult *res) {
     }
 }
 
-int create_loans(const char *username, const char *isbn_array[MAX_REQUEST_BUFFER_LENGTH]){
+int create_loans(const char *username, const ListNode *list){
     char query_string[1000] = "INSERT INTO loan (username, isbn) VALUES "
     PGresult *res = NULL; 
-    
+    ListNode *tmp = list; 
 
     // formattazzione query 
+    while(tmp->next != NULL){
+        sprintf(query_string, "(%s, %s), ", username, tmp->isbn);
+        tmp = tmp->next;
+    }
+    sprintf(query_string, "(%s, %s)", username, tmp->isbn);
+
+    // esecuzione query 
+    printf("Executing Query: %s \n", query_string);
+    res = PQexec(connection, query_string);
+
+    // la query non restituisce tuple, se è andata a buon fine il suo result status dovrebbe essere: PGRES_COMMAND_OK
+    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+        fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
+        PQclear(res);
+        return 1;
+    } else {
+        PQclear(res);
+        return 0;
+    }
     
 }
