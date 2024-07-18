@@ -1,7 +1,5 @@
 #include "../include/database.h"
 
-
-
 PGconn *connection = NULL;
 
 void disconnect_database() {
@@ -205,21 +203,46 @@ void print_query_result(PGresult *res) {
     }
 }
 
-int create_loans(const char *username, const ListNode *list){
-    char query_string[1000] = "INSERT INTO loan (username, isbn) VALUES ";
-    PGresult *res = NULL; 
-    ListNode *tmp = list; 
+int create_loans(const char *username, ListNode *list) {
+    PGresult *res = NULL;
 
-    // formattazzione query 
-    while(tmp->next != NULL){
-        sprintf(query_string, "(%s, %s), ", username, tmp->isbn);
-        tmp = tmp->next;
+    // Allocazione iniziale di memoria per la query
+    size_t query_size = MAX_REQUEST_BUFFER_LENGTH;
+    char *query_string = malloc(query_size * sizeof(char));
+
+    // Errore di allocazione della memoria
+    if (query_string == NULL) return 1;
+
+    // Inizializzazione della query string
+    strcpy(query_string, "INSERT INTO loan (username, isbn) VALUES ");
+
+    // formattazione query
+    while (list != NULL) {
+        char values[MAX_REQUEST_BUFFER_LENGTH * 3];
+        sprintf(values, "('%s', '%s')", username, list->isbn);
+
+        // Controlla se c'è abbastanza spazio per concatenare values a query_string
+        // se la stringa attuale più quella nuova, supera l'attuale dimensione della stringa
+        //      allora la realloca aumentado la dimensione del doppio
+        if (strlen(query_string) + strlen(values) + 3 > query_size) {  // +3 per ", " o terminatore null
+            query_size *= 2;
+            query_string = realloc(query_string, query_size);
+            if (query_string == NULL) return 1;  // Errore di riallocazione
+        }
+
+        strcat(query_string, values);
+        list = list->next;
+
+        // finche c'è un valore da inserire, inserisce una virgola
+        if (list != NULL) strcat(query_string, ", ");
     }
-    sprintf(query_string, "(%s, %s)", username, tmp->isbn);
 
-    // esecuzione query 
+    // esecuzione query
     printf("Executing Query: %s \n", query_string);
     res = PQexec(connection, query_string);
+
+    // Libera la memoria allocata per la query
+    free(query_string);
 
     // la query non restituisce tuple, se è andata a buon fine il suo result status dovrebbe essere: PGRES_COMMAND_OK
     if (PQresultStatus(res) != PGRES_COMMAND_OK) {
@@ -230,5 +253,4 @@ int create_loans(const char *username, const ListNode *list){
         PQclear(res);
         return 0;
     }
-    
 }

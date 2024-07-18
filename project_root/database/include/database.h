@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../../config/request_config.h"
+#include "../../config/database_config.h"
 #include "../../config/list.h"
+#include "../../config/request_config.h"
 
 extern PGconn *connection;
 
@@ -20,7 +21,7 @@ int search_available_books(PGresult **res);
 int search_books_by_genre(PGresult **res, const char *book_genre);
 int search_books_by_name(PGresult **res, const char *book_name);
 
-int create_loans(const char *username, const ListNode *list);
+int create_loans(const char *username, ListNode *list);
 
 int return_book(int loan_id);
 

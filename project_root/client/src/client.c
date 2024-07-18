@@ -1,8 +1,10 @@
 #include "../include/client.h"
+#define fflush(stdin) while ((getchar()) != '\n')
 
 char username[STRING_BUFFER_LENGTH];
+ListNode *carrello = NULL;
 
-void search_book_by(int client_socket, int search_type);
+ListNode *search_book_by(int client_socket, int search_type);
 void print_array_books(cJSON *json);
 char *recv_and_compose_segmented_string(int client_socket);
 
@@ -94,7 +96,7 @@ char *recv_and_compose_segmented_string(int client_socket) {
 
 void press_key_to_continue() {
     printf("Premi invio per continuare...");
-    getchar();  // Per assorbire il newline rimasto nel buffer
+    fflush(stdin);
     getchar();  // Per aspettare l'invio da parte dell'utente
 }
 
@@ -254,8 +256,10 @@ void search_book_by_genre(int client_socket) {
 // - 0: search by name
 // - 1: search by genre
 // - 2: search by nothing, get all catalog
+// - 3: search by nothing, get all catalog and return a list of ListNode of received books
 // - default: search by name
-void search_book_by(int client_socket, int search_type) {
+ListNode *search_book_by(int client_socket, int search_type) {
+    ListNode *books = NULL;
     int request_type;
     int db_result;
     char search_key[MAX_REQUEST_BUFFER_LENGTH];
@@ -269,6 +273,7 @@ void search_book_by(int client_socket, int search_type) {
             request_type = SEARCH_BOOK_BY_GENRE;
             break;
         case 2:
+        case 3:
             request_type = EXPLORE_CATALOG;
             break;
     }
@@ -284,12 +289,13 @@ void search_book_by(int client_socket, int search_type) {
             scanf("%s", search_key);
             break;
         case 2:
+        case 3:
             break;
     }
 
     if ((send(client_socket, (int *)&request_type, sizeof(request_type), 0)) == -1) {
         perror("Error to send message");
-        return;
+        return NULL;
     }
 
     switch (search_type) {
@@ -298,10 +304,11 @@ void search_book_by(int client_socket, int search_type) {
         case 1:
             if ((send(client_socket, (char *)search_key, MAX_REQUEST_BUFFER_LENGTH, 0)) == -1) {
                 perror("Error to send message");
-                return;
+                return NULL;
             }
             break;
         case 2:
+        case 3:
             break;
     }
 
@@ -309,13 +316,13 @@ void search_book_by(int client_socket, int search_type) {
     ssize_t result = recv(client_socket, (int *)&db_result, sizeof(db_result), 0);
     if (result == -1) {
         perror("Error to receive message");
-        return;
+        return NULL;
     }
 
     // query fallita
     if (db_result == 1) {
         printf("Errore nell'esecuzione della query\n");
-        return;
+        return NULL;
     }
 
     char *message = recv_and_compose_segmented_string(client_socket);
@@ -328,21 +335,119 @@ void search_book_by(int client_socket, int search_type) {
             printf("Error: %s\n", error_ptr);
         }
         cJSON_Delete(json);
-        return;
+        return NULL;
     }
 
-    print_array_books(json);
+    if (search_type == 3) {
+        cJSON *item;
+        cJSON_ArrayForEach(item, json) {
+            cJSON *isbn = cJSON_GetObjectItemCaseSensitive(item, "isbn");
+            cJSON *title = cJSON_GetObjectItemCaseSensitive(item, "title");
 
-    printf("Libri trovati: %d\n", cJSON_GetArraySize(json));
+            if (cJSON_IsString(isbn) && cJSON_IsString(title)) {
+                list_insert(&books, isbn->valuestring, title->valuestring);
+            }
+        }
+    } else {
+        print_array_books(json);
+        printf("Libri trovati: %d\n", cJSON_GetArraySize(json));
+    }
 
     // delete the JSON object
     cJSON_Delete(json);
 
     free(message);
+
+    return books;
 }
 
-void view_loans() {
+void loan_request(int client_socket) {
+    ListNode *catalogo = search_book_by(client_socket, 3);
+
+    int scelta;
+    int indice_libro_scelto;
+
+    while (1) {
+        system("clear");
+
+        if (catalogo == NULL) {
+            printf("Errore nella visualizzazione del catalogo\n");
+            press_key_to_continue();
+            return;
+        }
+
+        printf("----- CARRELLO -----\n");
+        if (carrello == NULL) {
+            printf("Vuoto\n");
+        } else {
+            print_list(carrello);
+        }
+        printf("\n\n");
+
+        printf("----- RICHIEDI PRESTITO -----\n");
+        printf("1. Aggiungi al carrello\n");
+        printf("2. Svuota carrello\n");
+        printf("3. Checkout\n");
+        printf("4. Torna indietro\n\n");
+        printf("Scegli un'opzione: ");
+        scanf("%d", &scelta);
+
+        system("clear");
+
+        switch (scelta) {
+            case 1:
+                print_list(catalogo);
+                printf("Inserisci il numero del libro: \n");
+                scanf("%d", &indice_libro_scelto);
+                insert_book(&carrello, catalogo, indice_libro_scelto);
+                press_key_to_continue();
+                break;
+            case 2:
+                free_list(&carrello);
+                break;
+            case 3:
+                int request_type = MAKE_LOAN;
+                if (carrello == NULL) {
+                    printf("Il carrello e' vuoto\n");
+                } else if ((send(client_socket, (int *)&request_type, sizeof(request_type), 0)) == -1) {
+                    perror("Error to start checkout");
+                } else {
+                    ListNode *tmp = carrello;
+                    char stop_message[MAX_REQUEST_BUFFER_LENGTH] = "STOP";
+
+                    while (tmp != NULL) {
+                        if ((send(client_socket, (char *)&(tmp->isbn), MAX_REQUEST_BUFFER_LENGTH, 0)) == -1)
+                            perror("Error to send book");
+
+                        tmp = tmp->next;
+                    }
+
+                    // send stop message
+                    if ((send(client_socket, (char *)&stop_message, MAX_REQUEST_BUFFER_LENGTH, 0)) == -1) {
+                        perror("Error to send stop message");
+                    }
+
+                    int query_result;
+                    ssize_t result = recv(client_socket, (int *)&query_result, sizeof(query_result), 0);
+                    if (result == -1) {
+                        perror("Error to receive message");
+                    } else if (query_result == 1) {  // query fallita
+                        printf("Checkout fallito\n");
+                    } else {
+                        printf("Prestito effettuato!\n");
+                        free_list(&carrello);
+                    }
+                }
+                press_key_to_continue();
+                break;
+            case 4:
+                return;
+            default:
+                break;
+        }
+    }
 }
 
-void return_book() {
-}
+void view_loans() {}
+
+void return_book() {}

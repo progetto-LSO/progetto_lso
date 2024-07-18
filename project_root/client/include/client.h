@@ -1,4 +1,5 @@
 #include <cjson/cJSON.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,11 +7,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "../../config/list.h"
 #include "../../config/request_config.h"
 
 #define STRING_BUFFER_LENGTH 256
 
 extern char username[STRING_BUFFER_LENGTH];
+extern ListNode *carrello;
 
 // 0: sign in success
 // 1: sign in failed
@@ -27,6 +30,8 @@ void explore_catalog(int client_socket);
 void search_book_by_name(int client_socket);
 
 void search_book_by_genre(int client_socket);
+
+void loan_request(int client_socket);
 
 void view_loans();
 

@@ -63,11 +63,10 @@ int main() {
                 press_key_to_continue();
                 break;
             case 4:
-                view_loans();
-                press_key_to_continue();
+                loan_request(client_socket);
                 break;
             case 5:
-                return_book();
+                view_loans();
                 press_key_to_continue();
                 break;
             case 6:

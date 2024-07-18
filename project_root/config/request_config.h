@@ -1,3 +1,4 @@
+#pragma once
 #define MAX_REQUEST_BUFFER_LENGTH 1024
 
 enum RequestType {
