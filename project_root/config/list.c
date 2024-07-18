@@ -1,15 +1,10 @@
 #include "list.h"
-#include "singly_linked_list.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 
 ListNode* build_list_node(char isbn[MAX_REQUEST_BUFFER_LENGTH]) {
     ListNode* newNode = (ListNode*)malloc(sizeof(ListNode));
 
     if (newNode != NULL) {
-        newNode->isbn = isbn;
+        strcpy(newNode->isbn, isbn);
         newNode->next = NULL;
     }
 

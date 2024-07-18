@@ -1,7 +1,6 @@
 #include <string.h>
 #include <sys/socket.h>
 
-#include "../../config/request_config.h"
 #include "../../database/include/database.h"
 
 void handle_signup(int client_socket, char *username);

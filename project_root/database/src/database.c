@@ -231,11 +231,11 @@ void print_query_result(PGresult *res) {
     }
 }
 
-int create_loans(const char *username, const char *isbn_array[MAX_REQUEST_BUFFER_LENGTH]){
-    char query_string[1000] = "INSERT INTO loan (username, isbn) VALUES "
-    PGresult *res = NULL; 
-    
+int create_loans(const char *username, const char *isbn_array[MAX_REQUEST_BUFFER_LENGTH]) {
+    char query_string[1000] = "INSERT INTO loan (username, isbn) VALUES ";
+    PGresult *res = NULL;
 
-    // formattazzione query 
-    
+    // formattazzione query
+
+    return 0;
 }
