@@ -14,6 +14,8 @@ void *client_request_handler(void *socket) {
 
     int request_type;
 
+    char username[MAX_REQUEST_BUFFER_LENGTH];
+
     while (1) {
         ssize_t result = recv(client_socket, (int *)&request_type, sizeof(request_type), 0);
         if (result == -1) {
@@ -27,11 +29,11 @@ void *client_request_handler(void *socket) {
 
         switch (request_type) {
             case SIGN_UP:
-                handle_signup(client_socket);
+                handle_signup(client_socket, username);
                 break;
 
             case SIGN_IN:
-                handle_signin(client_socket);
+                handle_signin(client_socket, username);
                 break;
 
             case EXPLORE_CATALOG:

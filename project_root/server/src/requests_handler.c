@@ -21,12 +21,11 @@ void send_string_segmented(int client_socket, char *string) {
     }
 }
 
-void handle_signup(int client_socket) {
+void handle_signup(int client_socket, char *username) {
     // 0: if signup succeed
     // 1: otherwise
     int signup_result;
 
-    char username[MAX_REQUEST_BUFFER_LENGTH];
     char password[MAX_REQUEST_BUFFER_LENGTH];
 
     ssize_t username_recv;
@@ -49,12 +48,11 @@ void handle_signup(int client_socket) {
     send(client_socket, (int *)&signup_result, sizeof(signup_result), 0);
 }
 
-void handle_signin(int client_socket) {
+void handle_signin(int client_socket, char *username) {
     // 0: if signin succeed
     // 1: otherwise
     int signin_result;
 
-    char username[MAX_REQUEST_BUFFER_LENGTH];
     char password[MAX_REQUEST_BUFFER_LENGTH];
 
     ssize_t username_recv;
