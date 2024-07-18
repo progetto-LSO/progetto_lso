@@ -230,3 +230,12 @@ void print_query_result(PGresult *res) {
         printf("\n");
     }
 }
+
+int create_loans(const char *username, const char *isbn_array[MAX_REQUEST_BUFFER_LENGTH]){
+    char query_string[1000] = "INSERT INTO loan (username, isbn) VALUES "
+    PGresult *res = NULL; 
+    
+
+    // formattazzione query 
+    
+}

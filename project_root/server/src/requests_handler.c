@@ -165,6 +165,6 @@ void handle_search_books_by_genre(int client_socket) {
 
 void handle_loan_requests(int client_socket){
     PGresult *query_result;
-
-    // il client invia una richiesta MAKE_LOAN ()
+    
+    
 }
