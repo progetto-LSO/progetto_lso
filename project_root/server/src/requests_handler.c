@@ -7,7 +7,6 @@ void send_string_segmented(int client_socket, char *string);
 void send_string_segmented(int client_socket, char *string) {
     size_t message_length = 0;
     size_t total_sent = 0;
-    char *json_result = NULL;
 
     message_length = strlen(string);
 
@@ -115,7 +114,7 @@ void handle_search_book_by_name(int client_socket) {
     // wait for user to send the book name
     book_name_recv = recv(client_socket, (char *)book_name, MAX_REQUEST_BUFFER_LENGTH, 0);
 
-    if (book_name_recv == -1) {
+    if (book_name_recv == -1UL) {
         perror("Error to receive message");
         return;
     } else if (book_name_recv == 0) {
@@ -145,7 +144,7 @@ void handle_search_books_by_genre(int client_socket) {
     // wait for user to send the book genre
     book_genre_recv = recv(client_socket, (char *)book_genre, MAX_REQUEST_BUFFER_LENGTH, 0);
 
-    if (book_genre_recv == -1) {
+    if (book_genre_recv == -1UL) {
         perror("Error to receive message");
         return;
     } else if (book_genre_recv == 0) {

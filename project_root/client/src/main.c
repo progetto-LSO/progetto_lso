@@ -15,7 +15,7 @@ void sig_handler(int signo) {
     }
 }
 
-int main(int argc, char const *argv[]) {
+int main() {
     // Imposta il gestore di segnali per SIGINT e SIGTERM
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
