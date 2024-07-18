@@ -163,8 +163,24 @@ void handle_search_books_by_genre(int client_socket) {
     }
 }
 
-void handle_loan_requests(int client_socket){
+void handle_loan_requests(int client_socket, char *username){
     PGresult *query_result;
+    ListNode *list = NULL; 
+    char buffer[MAX_REQUEST_BUFFER_LENGTH];
+    int query_status = 0; 
+
+    // ricevo gli isbn di cui fare il loan dal client
+    while(rec(client_socket, (char *)buffer, MAX_REQUEST_BUFFER_LENGTH, 0) > 0){
+        if(strcmp("STOP", buffer) == 0) break; 
+        list_insert(&list, buffer);
+    }
     
+    query_status = create_loans(username, list);
+
+    if (query_status == 1) {  // query failed, send 1 to client to say "Query Failed"
+        send(client_socket, (int *)&query_status, sizeof(query_status), 0);
+    } else {
+        send(client_socket, (int *)&query_status, sizeof(query_status), 0);
+    }
     
 }

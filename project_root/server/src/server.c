@@ -53,7 +53,7 @@ void *client_request_handler(void *socket) {
                 break;
 
             case MAKE_LOAN: 
-                handle_loan_requests(client_socket);
+                handle_loan_requests(client_socket, username);
                 break; 
 
             default:
