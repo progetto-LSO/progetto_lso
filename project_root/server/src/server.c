@@ -50,6 +50,10 @@ void *client_request_handler(void *socket) {
                 handle_search_books_by_genre(client_socket);
                 break;
 
+            case MAKE_LOAN: 
+                handle_loan_requests(client_socket);
+                break; 
+
             default:
                 break;
         }

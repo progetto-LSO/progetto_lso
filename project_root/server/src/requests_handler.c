@@ -164,3 +164,9 @@ void handle_search_books_by_genre(int client_socket) {
         send_string_segmented(client_socket, PQgetvalue(query_result, 0, 0));
     }
 }
+
+void handle_loan_requests(int client_socket){
+    PGresult *query_result;
+
+    // il client invia una richiesta MAKE_LOAN ()
+}

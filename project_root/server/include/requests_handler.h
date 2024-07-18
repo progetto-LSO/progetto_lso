@@ -10,3 +10,4 @@ void handle_explore_catalog(int client_socket);
 void handle_search_available_books(int client_socket);
 void handle_search_book_by_name(int client_socket);
 void handle_search_books_by_genre(int client_socket);
+void handle_loan_requests(int client_socket);
