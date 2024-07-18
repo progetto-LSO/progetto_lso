@@ -448,6 +448,121 @@ void loan_request(int client_socket) {
     }
 }
 
-void view_loans() {}
+void view_loans(int client_socket) {
+    int request_type = GET_LOAN_BOOKS;
 
-void return_book() {}
+    int scelta;
+    int indice_libro_scelto;
+    int db_result;
+
+    LoanListNode *loan_books = NULL;
+
+    if ((send(client_socket, (int *)&request_type, sizeof(request_type), 0)) == -1) {
+        perror("Error to send request type message");
+        return;
+    }
+
+    // controlla se la query è stata eseguita correttamente
+    ssize_t result = recv(client_socket, (int *)&db_result, sizeof(db_result), 0);
+    if (result == -1) {
+        perror("Error to receive message");
+        return;
+    }
+
+    // query fallita
+    if (db_result == 1) {
+        printf("Errore nell'esecuzione della query\n");
+        return;
+    }
+
+    char *message = recv_and_compose_segmented_string(client_socket);
+
+    // parse the JSON data
+    cJSON *json = cJSON_Parse(message);
+    if (json == NULL) {
+        const char *error_ptr = cJSON_GetErrorPtr();
+        if (error_ptr != NULL) {
+            printf("Error: %s\n", error_ptr);
+        }
+        cJSON_Delete(json);
+        return;
+    }
+
+    cJSON *item;
+    cJSON_ArrayForEach(item, json) {
+        cJSON *id = cJSON_GetObjectItemCaseSensitive(item, "id");
+        cJSON *isbn = cJSON_GetObjectItemCaseSensitive(item, "isbn");
+        cJSON *title = cJSON_GetObjectItemCaseSensitive(item, "title");
+        cJSON *loan_end = cJSON_GetObjectItemCaseSensitive(item, "loan_end");
+
+        if (cJSON_IsNumber(id) && cJSON_IsString(isbn) && cJSON_IsString(title) && cJSON_IsString(loan_end)) {
+            loan_list_insert(&loan_books, id->valueint, isbn->valuestring, title->valuestring, loan_end->valuestring);
+        }
+    }
+
+    while (1) {
+        system("clear");
+
+        printf("----- LIBRI IN PRESTITO -----\n");
+        if (loan_books == NULL) {
+            printf("Nessun libro in prestito\n\n");
+            press_key_to_continue();
+            return;
+        } else {
+            print_loan_list(loan_books);
+        }
+        printf("\n\n");
+
+        printf("-----------------------------\n");
+        printf("1. Restituisci libro\n");
+        printf("2. Torna indietro\n\n");
+        printf("Scegli un'opzione: ");
+        scanf("%d", &scelta);
+
+        switch (scelta) {
+            case 1:
+                printf("Inserisci il numero del libro: \n");
+                scanf("%d", &indice_libro_scelto);
+
+                LoanListNode *loan = get_ith_loan_element(loan_books, indice_libro_scelto - 1);
+
+                if (loan == NULL) {
+                    printf("Numero libro non valido\n");
+                    press_key_to_continue();
+                    break;
+                }
+
+                request_type = RETURN_BOOK;
+                if ((send(client_socket, (int *)&request_type, sizeof(request_type), 0)) == -1) {
+                    perror("Error to send request type message");
+                    break;
+                }
+
+                if ((send(client_socket, (int *)&(loan->id), sizeof(loan->id), 0)) == -1) {
+                    perror("Error to send message");
+                    break;
+                }
+
+                // controlla se la query è stata eseguita correttamente
+                ssize_t result = recv(client_socket, (int *)&db_result, sizeof(db_result), 0);
+                if (result == -1) {
+                    perror("Error to receive message");
+                    break;
+                }
+
+                // query fallita
+                if (db_result == 1) {
+                    printf("Errore nell'esecuzione della query\n");
+                    break;
+                }
+
+                remove_ith_loan_element(&loan_books, indice_libro_scelto - 1);
+                break;
+            case 2:
+                free_loan_list(&loan_books);
+                return;
+            default:
+                break;
+        }
+    }
+}

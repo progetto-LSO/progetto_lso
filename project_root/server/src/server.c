@@ -1,4 +1,5 @@
 #include "../include/server.h"
+
 #include "../include/requests_handler.h"
 
 // crea un thread dedicato per gestire un singolo client che ha effettuato la connessione al server
@@ -52,9 +53,17 @@ void *client_request_handler(void *socket) {
                 handle_search_books_by_genre(client_socket);
                 break;
 
-            case MAKE_LOAN: 
+            case MAKE_LOAN:
                 handle_loan_requests(client_socket, username);
-                break; 
+                break;
+
+            case GET_LOAN_BOOKS:
+                handle_get_loan_books(client_socket, username);
+                break;
+
+            case RETURN_BOOK:
+                handle_return_book(client_socket);
+                break;
 
             default:
                 break;

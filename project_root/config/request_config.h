@@ -9,5 +9,6 @@ enum RequestType {
     SEARCH_BOOK_BY_NAME, 
     SEARCH_BOOK_BY_GENRE,
     MAKE_LOAN, 
+    GET_LOAN_BOOKS, 
     RETURN_BOOK, 
 };

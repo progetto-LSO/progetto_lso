@@ -19,3 +19,4 @@ void print_list(ListNode* list);
 void free_list(ListNode** list);
 
 void insert_book(ListNode** carrello, ListNode* catalogo, int indice_libro_scelto);
+void remove_ith_element(ListNode** list, int i);

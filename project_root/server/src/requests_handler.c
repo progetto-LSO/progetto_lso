@@ -164,7 +164,6 @@ void handle_search_books_by_genre(int client_socket) {
 }
 
 void handle_loan_requests(int client_socket, char *username) {
-    PGresult *query_result;
     ListNode *list = NULL;
     char buffer[MAX_REQUEST_BUFFER_LENGTH];
     int query_status = 0;
@@ -180,4 +179,33 @@ void handle_loan_requests(int client_socket, char *username) {
     // send 1 to client to say "Query Failed"
     // send 0 to client to say "Query succeded"
     send(client_socket, (int *)&query_status, sizeof(query_status), 0);
+}
+
+void handle_get_loan_books(int client_socket, char *username) {
+    PGresult *query_result;
+    int result = 0;
+
+    result = get_loan_books(&query_result, username);
+
+    if (result == 1) {  // query failed, send 1 to client to say "Query Failed"
+        send(client_socket, (int *)&result, sizeof(result), 0);
+    } else {
+        send(client_socket, (int *)&result, sizeof(result), 0);
+        send_string_segmented(client_socket, PQgetvalue(query_result, 0, 0));
+    }
+}
+
+void handle_return_book(int client_socket) {
+    int query_result = 0;
+    int loan_id;
+
+    ssize_t result = recv(client_socket, (int *)&loan_id, sizeof(loan_id), 0);
+    if (result == -1) {
+        perror("Error to receive message");
+        send(client_socket, (int *)&result, sizeof(result), 0);
+        return;
+    }
+
+    query_result = return_book(loan_id);
+    send(client_socket, (int *)&query_result, sizeof(query_result), 0);
 }

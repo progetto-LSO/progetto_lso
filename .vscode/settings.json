@@ -20,7 +20,10 @@
         "in.h": "c",
         "database_config.h": "c",
         "cjson.h": "c",
-        "requests_handler.h": "c"
+        "requests_handler.h": "c",
+        "list.h": "c",
+        "time.h": "c",
+        "loan_list.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

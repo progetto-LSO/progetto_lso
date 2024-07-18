@@ -66,8 +66,7 @@ int main() {
                 loan_request(client_socket);
                 break;
             case 5:
-                view_loans();
-                press_key_to_continue();
+                view_loans(client_socket);
                 break;
             case 6:
                 close(client_socket);

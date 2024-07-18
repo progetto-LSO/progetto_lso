@@ -20,6 +20,7 @@ int get_books(PGresult **res);
 int search_available_books(PGresult **res);
 int search_books_by_genre(PGresult **res, const char *book_genre);
 int search_books_by_name(PGresult **res, const char *book_name);
+int get_loan_books(PGresult **res, const char *username);
 
 int create_loans(const char *username, ListNode *list);
 

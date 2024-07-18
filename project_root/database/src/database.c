@@ -254,3 +254,32 @@ int create_loans(const char *username, ListNode *list) {
         return 0;
     }
 }
+
+// salva in res i libri attualmente presi in prestito dall'utente
+int get_loan_books(PGresult **res, const char *username) {
+    char query_string[1024];
+
+    sprintf(query_string,
+            "SELECT coalesce(json_agg(row), '[]'::json) "
+            "FROM ( "
+            "   SELECT "
+            "       l.id, "
+            "       l.isbn, "
+            "       b.title, "
+            "       to_char(l.loan_end, 'DD/MM/YYYY - HH24:MI') as loan_end "
+            "    FROM public.loan as l  JOIN  public.book as b  ON  l.isbn = b.isbn "
+            "    WHERE username = '%s' and returned is null "
+            ") as row; ",
+            username);
+
+    printf("Executing Query: %s \n", query_string);
+    *res = PQexec(connection, query_string);
+
+    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK) {
+        fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
+        PQclear(*(res));
+        return 1;
+    }
+
+    return 0;
+}

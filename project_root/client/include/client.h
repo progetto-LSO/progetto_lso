@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include "../../config/list.h"
+#include "../../config/loan_list.h"
 #include "../../config/request_config.h"
 
 #define STRING_BUFFER_LENGTH 256
@@ -33,9 +34,7 @@ void search_book_by_genre(int client_socket);
 
 void loan_request(int client_socket);
 
-void view_loans();
-
-void return_book();
+void view_loans(int client_socket);
 
 void press_key_to_continue();
 
