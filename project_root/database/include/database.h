@@ -27,3 +27,5 @@ int create_loans(const char *username, ListNode *list);
 int return_book(int loan_id);
 
 void print_query_result(PGresult *res);
+
+int check_loan_expired(PGresult **res, const char *username);

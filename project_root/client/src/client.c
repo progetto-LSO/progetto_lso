@@ -128,7 +128,7 @@ int sign_in(int client_socket) {
         return 1;
     }
 
-    printf("Aspettando la risposta del server...\n");
+    printf("Aspettando la risposta del server...\n\n\n");
 
     ssize_t result = recv(client_socket, (int *)&signin_result, sizeof(signin_result), 0);
     if (result == -1) {
@@ -138,6 +138,17 @@ int sign_in(int client_socket) {
 
     if (signin_result == 0) {
         strcpy(username, _username);
+
+        result = recv(client_socket, (int *)&signin_result, sizeof(signin_result), 0);
+        if (result == -1) {
+            perror("Error to receive message");
+            return 1;
+        }
+
+        if (signin_result == 0) {
+            printf("Hai dei libri da restituire, vai nella sezione \"Visualizza prestiti\" per restituirli.\n");
+        }
+
         return 0;
     } else {
         return 1;
@@ -194,7 +205,6 @@ void show_auth_menu(int client_socket) {
     int result;
 
     while (1) {
-        // system("clear");
         printf("----- AUTH MENU -----\n");
         printf("1. Registrati\n");
         printf("2. Accedi\n");
@@ -221,7 +231,6 @@ void show_auth_menu(int client_socket) {
                 result = sign_in(client_socket);
 
                 if (result == 0) {
-                    printf("Accesso effettuato con successo\n\n");
                     press_key_to_continue();
                     return;
                 } else {
@@ -237,6 +246,8 @@ void show_auth_menu(int client_socket) {
             default:
                 break;
         }
+
+        system("clear");
     }
 }
 

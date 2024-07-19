@@ -49,6 +49,8 @@ void handle_signup(int client_socket, char *username) {
 }
 
 void handle_signin(int client_socket, char *username) {
+    PGresult *query_result;
+
     // 0: if signin succeed
     // 1: otherwise
     int signin_result;
@@ -73,6 +75,23 @@ void handle_signin(int client_socket, char *username) {
     signin_result = sign_in(username, password);
 
     send(client_socket, (int *)&signin_result, sizeof(signin_result), 0);
+
+    if (signin_result == 0) {  // signin succeeded
+
+        // controlla se ci sono libri da restituire
+        //
+        // si riutilizza <signin_result> per inviare un messagio al client
+        // per dirgli se ci sono oppure no prestiti da restituire
+        // 0: ci sono libri da restituire
+        // 1: non ci sono libri da restituire
+        if (check_loan_expired(&query_result, username) == 0 && strcmp(PQgetvalue(query_result, 0, 0), "t") == 0) {  // query succeeded
+            signin_result = 0;
+            send(client_socket, (int *)&signin_result, sizeof(signin_result), 0);
+        } else {
+            signin_result = 1;
+            send(client_socket, (int *)&signin_result, sizeof(signin_result), 0);
+        }
+    }
 }
 
 void handle_explore_catalog(int client_socket) {

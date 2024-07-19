@@ -283,3 +283,29 @@ int get_loan_books(PGresult **res, const char *username) {
 
     return 0;
 }
+
+int check_loan_expired(PGresult **res, const char *username) {
+    char query[1024];
+
+    sprintf(
+        query,
+        "SELECT EXISTS( "
+        "   SELECT 1 "
+        "   FROM public.loan "
+        "   WHERE "
+        "       current_timestamp > loan_end "
+        "       AND returned is null "
+        "       AND username = '%s') ",
+        username);
+
+    printf("Executing Query: %s \n", query);
+    *res = PQexec(connection, query);
+
+    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK) {
+        fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
+        PQclear(*(res));
+        return 1;
+    }
+
+    return 0;
+}
