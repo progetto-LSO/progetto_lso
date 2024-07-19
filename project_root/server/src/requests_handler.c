@@ -1,6 +1,6 @@
-
-#include "../include/server.h" 
 #include "../include/requests_handler.h"
+
+#include "../include/server.h"
 
 // invia una stringa al client, a blocchi grandi MAX_REQUEST_BUFFER_LENGTH
 void send_string_segmented(int client_socket, char *string);
@@ -195,20 +195,23 @@ void handle_loan_requests(int client_socket, char *username) {
     }
 
     // sezione critica , bloccare semaforo:
-    if(pthread_mutex_lock(&sem) != 0){
-        perror("Failed to lock Mutex"); 
+    if (pthread_mutex_lock(&sem) != 0) {
+        perror("Failed to lock Mutex");
     } else {
         printf("Mutex Locked\n");
     }
 
     query_status = create_loans(username, list);
 
+    // sleep a scopo dimostrativo
+    sleep(5);
+
     // send 1 to client to say "Query Failed"
     // send 0 to client to say "Query succeded"
     send(client_socket, (int *)&query_status, sizeof(query_status), 0);
 
-    if(pthread_mutex_unlock(&sem) != 0){
-        perror("Failed to unlock Mutex"); 
+    if (pthread_mutex_unlock(&sem) != 0) {
+        perror("Failed to unlock Mutex");
     } else {
         printf("Mutex Unlocked\n");
     }
