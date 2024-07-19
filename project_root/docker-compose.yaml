@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  database:
+    build:
+      context: .
+      dockerfile: Dockerfile.database
+    environment:
+      POSTGRES_DB: library
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    depends_on:
+      - database
+    environment:
+      DB_HOST: "127.0.0.1"
+      DB_PORT: 5432
+      DB_NAME: library
+      DB_USER: postgres
+      DB_PASSWORD: admin
+    ports:
+      - "8080:8080"
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    depends_on:
+      - server
+
+volumes:
+  db_data:

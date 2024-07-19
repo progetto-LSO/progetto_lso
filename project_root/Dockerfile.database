@@ -1,0 +1,16 @@
+# Dockerfile per il database
+FROM postgres:latest
+
+# Imposta le variabili d'ambiente per la configurazione del database
+ENV POSTGRES_DB=library
+ENV POSTGRES_USER=postgres
+ENV POSTGRES_PASSWORD=admin
+
+# Copia i file SQL di inizializzazione (se presenti)
+COPY database/query/*.sql /docker-entrypoint-initdb.d/
+
+# Copia lo script di configurazione per cambiare la password e creare il database
+COPY database/init-user-db.sh /docker-entrypoint-initdb.d/
+
+# Esponi la porta del database
+EXPOSE 5432

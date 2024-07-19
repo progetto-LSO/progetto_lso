@@ -1,0 +1,36 @@
+# Dockerfile per il server
+FROM gcc:latest
+
+# Installa le dipendenze di sistema
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    libcjson-dev
+
+# Crea le directory di lavoro
+RUN mkdir -p /app/server/src /app/server/build /app/server/include \
+    /app/database/src /app/database/include \
+    /app/config
+
+# Copia il contenuto delle directory nei rispettivi percorsi
+COPY server/src /app/server/src
+COPY server/include /app/server/include
+
+COPY database/src /app/database/src
+COPY database/include /app/database/include
+
+COPY config /app/config
+
+# Copia il Makefile nella directory di lavoro
+COPY Makefile /app
+
+# Copia lo script wait-for-it.sh
+COPY wait-for-it.sh /usr/local/bin/
+
+# Imposta la directory di lavoro
+WORKDIR /app
+
+# Compila il server
+RUN make server
+
+# Utilizza wait-for-it.sh per attendere che il database sia pronto
+CMD ["sh", "-c", "/usr/local/bin/wait-for-it.sh database:5432 -- make run_server"]
