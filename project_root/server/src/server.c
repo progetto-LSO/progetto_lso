@@ -1,6 +1,12 @@
 #include "../include/server.h"
-
 #include "../include/requests_handler.h"
+
+pthread_mutex_t sem; 
+
+void initialize_mutex(pthread_mutex_t sem){
+    if(pthread_mutex_init(&sem, NULL) != 0)
+        perror("Mutex Init Failed"), exit(EXIT_FAILURE); 
+}
 
 // crea un thread dedicato per gestire un singolo client che ha effettuato la connessione al server
 void client_request_initializer(pthread_t *tid, int *client_socket) {
