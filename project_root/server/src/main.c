@@ -25,6 +25,10 @@ int main() {
     struct sockaddr_in server_address;
     struct sockaddr_in client_address;
 
+    // inizializzazione mutex per la gestione delle sezioni critiche 
+    initialize_mutex(sem);
+    
+
     // configurazione indirizzo server
     address_config(&server_address, SERVER_ADDRESS, SERVER_PORT);
     // configurazione del socket
