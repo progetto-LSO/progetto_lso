@@ -32,5 +32,8 @@ WORKDIR /app
 # Compila il server
 RUN make server
 
+EXPOSE 8080
+
 # Utilizza wait-for-it.sh per attendere che il database sia pronto
-CMD ["sh", "-c", "/usr/local/bin/wait-for-it.sh database:5432 -- make run_server"]
+CMD ["sh", "-c", "/usr/local/bin/wait-for-it.sh database:5432 -- make run_server -- make run_client"]
+# CMD ["make", "run_server"]
