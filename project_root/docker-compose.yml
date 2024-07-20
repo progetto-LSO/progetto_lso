@@ -32,6 +32,7 @@ services:
   #     - pg-admin-data:/var/lib/pgadmin
 
   server:
+    image: library_server
     build:
       context: ./server
     depends_on:
@@ -47,6 +48,7 @@ services:
       - ./database:/app/database
       - ./config:/app/config
       - ./Makefile:/app/Makefile
+    tty: true         # Assegna un terminale virtuale
     networks:
       library:
         ipv4_address: 172.20.1.2
@@ -54,6 +56,7 @@ services:
       - "8080:8080"
 
   client:
+    image: library_client
     build:
       context: ./client
     volumes:
@@ -61,10 +64,7 @@ services:
       - ./Makefile:/app/Makefile
     networks:
       - library
-    environment:
-      TERM: xterm
-    command: make run_client
-    
+
 volumes:
   db_data:
   pg-admin-data:

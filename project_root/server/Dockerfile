@@ -18,9 +18,4 @@ WORKDIR /app
 COPY src /app/server/src
 COPY include /app/server/include
 
-COPY wait_for_it.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/wait_for_it.sh
-
 EXPOSE 8080
-
-# CMD ["sh", "-c", "/usr/local/bin/wait_for_it.sh database:5432 -- make run_server"]
