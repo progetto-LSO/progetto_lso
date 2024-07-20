@@ -42,14 +42,14 @@ services:
       DB_NAME: library
       DB_USER: postgres
       DB_PASSWORD: postgres
-    # command: make clean_server server
+    command: sh -c "make clean_server server; while :; do sleep 1; done"; 
     volumes:
       - ./database:/app/database
       - ./config:/app/config
       - ./Makefile:/app/Makefile
     networks:
       library:
-        ipv4_address: 172.20.0.3
+        ipv4_address: 172.20.1.2
     ports:
       - "8080:8080"
 
