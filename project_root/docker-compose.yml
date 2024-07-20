@@ -6,8 +6,8 @@ services:
     volumes:
       - ./database/query:/docker-entrypoint-initdb.d
       - db_data:/var/lib/postgresql/data
-    # networks:
-    #   - library
+    networks:
+      - library
     ports:
       - "5432:5432"
     environment:
@@ -48,10 +48,21 @@ services:
       - ./config:/app/config
       - ./Makefile:/app/Makefile
     networks:
-      - library
+      library:
+        ipv4_address: 172.20.0.3
     ports:
       - "8080:8080"
 
+  client:
+    build:
+      context: ./client
+    volumes:
+      - ./config:/app/config
+      - ./Makefile:/app/Makefile
+    networks:
+      - library
+    command: sh -c "while :; do sleep 1; done"
+    
 volumes:
   db_data:
   pg-admin-data:
@@ -59,6 +70,6 @@ volumes:
 networks:
   library:
     driver: bridge
-    # ipam:
-    #   config:
-    #     - subnet: 127.0.0.0/24
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

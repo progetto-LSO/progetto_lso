@@ -47,6 +47,7 @@ int main() {
     printf("Server is listening on: %s:%d \n", SERVER_ADDRESS, SERVER_PORT);
 
     connect_database();
+    printf("#### connect_database ####\n");
 
     while (1) {
         printf("Waiting for connections...\n");

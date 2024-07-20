@@ -1,7 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#define SERVER_ADDRESS "127.0.0.3"
+#define SERVER_ADDRESS "172.20.0.3"
 #define SERVER_PORT 8080
 #define MAX_LISTEN_QUEUE 5
 
