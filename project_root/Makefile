@@ -2,27 +2,34 @@
 SERVER_SRC = server/src
 SERVER_BUILD = server/build
 
+CLIENT_SRC = client/src
+CLIENT_BUILD = client/build
+
 DATABASE_SRC = database/src
 
 CONFIG_SRC = config
 
 # Compilatore e flag
 CC = gcc
-CFLAGS = -Wextra -Wall -I/usr/include/postgresql
-LDFLAGS = -lpq -ljson-c
+CFLAGS = -Wextra -Wall -I/usr/include/postgresql -lpq -lcjson
 
 # Obiettivi
-all: clean server
+all: clean server client
 
-server: $(SERVER_BUILD)/server
+server: $(SERVER_BUILD)/server.o
 
+client: $(CLIENT_BUILD)/client.o
 
 .PHONY: clean
 
-# Regola generica per compilare i file .c del server
-$(SERVER_BUILD)/server: $(wildcard $(SERVER_SRC)/*.c) $(wildcard $(DATABASE_SRC)/*.c) $(wildcard $(CONFIG_SRC)/*.c)
+# Regola generica per compilare i file .c
+$(SERVER_BUILD)/server.o: $(wildcard $(SERVER_SRC)/*.c) $(wildcard $(DATABASE_SRC)/*.c) $(wildcard $(CONFIG_SRC)/*.c)
 	mkdir -p $(SERVER_BUILD)
-	$(CC) -o $@ $^ $(CFLAGS) $(LDFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS)
+
+$(CLIENT_BUILD)/client.o: $(wildcard $(CLIENT_SRC)/*.c) $(wildcard $(CONFIG_SRC)/*.c)
+	mkdir -p $(CLIENT_BUILD)
+	$(CC) -o $@ $^ $(CFLAGS)
 
 
 # Pulizia dei file compilati
@@ -33,4 +40,13 @@ clean:
 clean_server:
 	rm -rf $(SERVER_BUILD)/*
 
+clean_client:
+	rm -rf $(CLIENT_BUILD)/*
 
+# Regola per avviare server.o
+run_server: clean_server server
+	$(SERVER_BUILD)/server.o
+
+# Regola per avviare client.o
+run_client: clean_client client
+	$(CLIENT_BUILD)/client.o

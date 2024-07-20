@@ -1,9 +1,0 @@
-FROM postgres:latest 
-
-ENV POSTGRES_DB=library 
-ENV POSTGRES_USER=postgres
-ENV POSTGRES_PASSWORD=postgres 
-
-COPY query/*.sql /docker-entrypoint-initdb.d/
-
-EXPOSE 5432

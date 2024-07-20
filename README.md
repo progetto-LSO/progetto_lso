@@ -1,45 +1,31 @@
 # Progetto LSO
+## Avvio con Docker Compose
+Spostati nella cartella `project_root`
 
-## Setup Database
-Accedi a postgres con `su - postgres`
+0. Esegui il build:
+    ```sh
+    docker compose build
+    ```
 
-Avvia `psql`
+L'avvio dei container dev'essere fatto in sessioni diverse del terminale<br/>
+Altrimenti è possibile accompagnare il comando con `-d` (*detach*) per avviare il container e liberare il terminale.
 
-Esegui la query 
-```sql
-CREATE DATABASE library;
-```
+1. Avvia il container del database:
+    ```sh
+    docker compose up database
+    ```
 
-Connettiti al database con `\c library`
+1. Avvia il container del server:
 
-Inserisci le tabelle eseguendo il codice SQL del file `tables.sql`
+    > Aspetta che il container del database riporti il messaggio "**database system is ready to accept connections**"
+    ```sh
+    docker compose up server
+    ```
 
-Inserisci le view eseguendo il codice SQL del file `views.sql`
+1. Avvia un'istanza del client:
 
-Inserisci i trigger eseguendo il codice SQL del file `triggers.sql`
+    > Aspetta prima l'avvio del server
 
-Inserisci libri eseguendo il codice SQL del file `book_insert.sql`
-
-## Installa le dipendenze
-### Postgres
-```sh
-sudo apt-get install libpq-dev
-```
-
-### cJSON
-```sh
-sudo apt update
-sudo apt upgrade
-sudo apt install build-essential cmake
-sudo apt install git
-git clone https://github.com/DaveGamble/cJSON.git
-cd cJSON
-mkdir build
-cd build
-cmake ..
-make
-sudo make install
-cd ../../
-rm -rf cJSON
-sudo ldconfig -v
-```
+    ```sh
+    ./run_docker_client.sh
+    ```

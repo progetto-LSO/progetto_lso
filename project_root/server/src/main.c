@@ -30,6 +30,7 @@ int main() {
 
     // configurazione indirizzo server
     address_config(&server_address, SERVER_ADDRESS, SERVER_PORT);
+
     // configurazione del socket
     welcoming_socket = open_socket();
     bind_socket(welcoming_socket, &server_address);
