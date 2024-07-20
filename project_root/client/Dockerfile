@@ -10,20 +10,18 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir -p /app/client/src /app/client/build /app/client/include \
     /app/config
 
-# Copia il contenuto delle directory nei rispettivi percorsi
-COPY client/src /app/client/src
-COPY client/include /app/client/include
-
-COPY config /app/config
-
-# Copia il Makefile nella directory di lavoro
-COPY Makefile /app
-
 # Imposta la directory di lavoro
 WORKDIR /app
+
+# Copia il contenuto delle directory nei rispettivi percorsi
+COPY ./src /app/client/src
+COPY ./include /app/client/include
+
+COPY ../config /app/config
+
+# Copia il Makefile nella directory di lavoro
+COPY ../Makefile /app
 
 # Compila il client
 RUN make client
 
-# Comando di default per avviare il client
-# CMD ["make", "run_client"]

@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  database:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    volumes:
+      - ./database/query:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/postgresql/data
+    networks:
+      example_net:
+        ipv4_address: 127.0.0.2
+    ports:
+      - "5432:5432"
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    command: ./wait-for-postgres.sh database:5432 -- make run_server
+    depends_on:
+      - database
+    volumes:
+      - ./database:/app/database
+      - ./config:/app/config
+      - ./Makefile:/app/Makefile
+    environment:
+      DB_HOST: "127.0.0.2"
+      DB_PORT: 5432
+      DB_NAME: library
+      DB_USER: postgres
+      DB_PASSWORD: admin
+    networks:
+      example_net:
+        ipv4_address: 127.0.0.3
+    ports:
+      - "8080:8080"
+
+  # client:
+  #   build:
+  #     context: ./client
+  #     dockerfile: Dockerfile
+  #   container_name: client
+  #   command: make run_client
+  #   depends_on:
+  #     - server
+
+volumes:
+  db_data:
+
+networks:
+  example_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 127.0.0.0/24
