@@ -31,6 +31,17 @@ services:
     networks:
       - library-network
 
+  server: 
+    build: 
+      context: .
+      dockerfile: ./server/Dockerfile.server
+    image: library_server
+    container_name: library_server_container 
+    depends_on:
+      - database
+    networks:
+      - library-network
+
 volumes:
   db-data:
   pg-admin-data:

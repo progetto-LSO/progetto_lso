@@ -1,0 +1,31 @@
+# Fase di build
+FROM gcc:latest AS builder
+
+# Installa le dipendenze necessarie
+RUN apt-get update && \
+    apt-get install -y libpq-dev libjson-c-dev make
+
+# Imposta la directory di lavoro
+WORKDIR /app
+
+# Copia tutto il progetto nella directory di lavoro
+COPY . .
+
+# Compila il progetto
+RUN make server
+
+# Fase di runtime
+FROM debian:latest
+
+# Installa le dipendenze runtime necessarie
+RUN apt-get update && \
+    apt-get install -y libpq5 libjson-c5
+
+# Imposta la directory di lavoro
+WORKDIR /app
+
+# Copia solo i file eseguibili dalla fase di build
+COPY --from=builder /app/server/build/server /app/
+
+# Comando per avviare il server
+CMD ["/app/server"]
