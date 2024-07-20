@@ -1,57 +1,40 @@
+version: "3.8"
+
 services:
   database:
-    ports:
-      - "5432:5432"
     build:
-      context: .
+      context: ./database
       dockerfile: Dockerfile.database
+    image: library_db
+    container_name: library_db_container
     environment:
-      POSTGRES_DB: library
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: library 
+      POSTGRES_USER: postgres 
+      POSTGRES_PASSWORD: postgres
     volumes:
-      - db_data:/var/lib/postgresql/data
-    
-  pgadmin:
-    container_name: container-pgadmin
-    image: dpage/pgadmin4
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - library-network
+
+  pg-admin:
+    image: dpage/pgadmin4:6
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@email.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_LISTEN_PORT=5050
+    ports:
+      - "5050:5050"
+    volumes:
+      - pg-admin-data:/var/lib/pgadmin
     depends_on:
       - database
-    ports:
-      - "5050:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
-    restart: unless-stopped
-
-  # server:
-  #   hostname: 127.0.0.1
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.server
-  #   depends_on:
-  #     - database
-  #   environment:
-  #     DB_HOST: "127.0.0.1"
-  #     DB_PORT: 5432
-  #     DB_NAME: library
-  #     DB_USER: postgres
-  #     DB_PASSWORD: admin
-  #   ports:
-  #     - "8080:8080"
-
-  # client:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.client
-  #   depends_on:
-  #     - server
+    networks:
+      - library-network
 
 volumes:
-  db_data:
+  db-data:
+  pg-admin-data:
 
-# networks:
-#   mynetwork:
-#     ipam:
-#       config:
-#         - subnet: 127.10.0.0/16
+networks:
+  library-network: 
+    driver: bridge 
