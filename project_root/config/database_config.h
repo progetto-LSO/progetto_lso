@@ -1,5 +1,5 @@
-#define DB_HOST "127.0.0.2"
+#define DB_HOST "database"
 #define DB_PORT "5432"
 #define DB_NAME "library"
 #define DB_USER "postgres"
-#define DB_PASSWORD "admin"
+#define DB_PASSWORD "postgres"

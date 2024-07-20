@@ -24,15 +24,21 @@ int main() {
     int dedicate_socket;
     struct sockaddr_in server_address;
     struct sockaddr_in client_address;
+    printf("#### SERVER ####\n");
 
     // inizializzazione mutex per la gestione delle sezioni critiche
     initialize_mutex(sem);
+    printf("#### initialize_mutex ####\n");
 
     // configurazione indirizzo server
     address_config(&server_address, SERVER_ADDRESS, SERVER_PORT);
+
+    printf("#### address_config ####\n");
     // configurazione del socket
     welcoming_socket = open_socket();
+    printf("#### open_socket ####\n");
     bind_socket(welcoming_socket, &server_address);
+    printf("#### bind_socket ####\n");
 
     // listen delle connessioni in ingresso
     if (listen(welcoming_socket, MAX_LISTEN_QUEUE) == -1)

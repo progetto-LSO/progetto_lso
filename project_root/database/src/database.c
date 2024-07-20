@@ -16,6 +16,8 @@ void connect_database() {
         fprintf(stderr, "Connection to database failed: %s\n", PQerrorMessage(connection));
         disconnect_database();
         exit(EXIT_FAILURE);
+    } else {
+        printf("Server connesso al database postgres\n\n");
     }
 }
 
