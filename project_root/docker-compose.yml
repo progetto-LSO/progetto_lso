@@ -1,4 +1,4 @@
-version: "3.9"
+# version: "3.9"
 
 services:
   database:
@@ -45,7 +45,7 @@ services:
     ports:
       - "5050:80"
     networks:
-      custom_network:
+      example_net:
         ipv4_address: 127.0.0.4
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
@@ -66,7 +66,7 @@ volumes:
 
 networks:
   example_net:
-    driver: bridge
+    # driver: host
     ipam:
       config:
         - subnet: 127.0.0.0/24
