@@ -36,6 +36,21 @@ services:
         ipv4_address: 127.0.0.3
     ports:
       - "8080:8080"
+ 
+  pgadmin:
+    container_name: container-pgadmin
+    image: dpage/pgadmin4
+    depends_on:
+      - database
+    ports:
+      - "5050:80"
+    networks:
+      custom_network:
+        ipv4_address: 127.0.0.4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    restart: unless-stopped
 
   # client:
   #   build:
