@@ -23,4 +23,4 @@ RUN chmod +x /usr/local/bin/wait_for_it.sh
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "/usr/local/bin/wait_for_it.sh database:5432 -- make run_server"]
+# CMD ["sh", "-c", "/usr/local/bin/wait_for_it.sh database:5432 -- make run_server"]

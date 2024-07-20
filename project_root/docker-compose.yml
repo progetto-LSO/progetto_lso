@@ -42,7 +42,7 @@ services:
       DB_NAME: library
       DB_USER: postgres
       DB_PASSWORD: postgres
-    command: sh -c "make clean_server server; while :; do sleep 1; done"; 
+    command: make run_server
     volumes:
       - ./database:/app/database
       - ./config:/app/config
@@ -61,7 +61,9 @@ services:
       - ./Makefile:/app/Makefile
     networks:
       - library
-    command: sh -c "while :; do sleep 1; done"
+    environment:
+      TERM: xterm
+    command: make run_client
     
 volumes:
   db_data:
