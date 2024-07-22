@@ -163,9 +163,20 @@ Il client può interagire con il server per gestire i prestiti dei libri. Il ser
 	\item Visualizzare i libri attualmente in prestito
 	\item Restituire un libro
 \end{enumerate}
+
 \section{Carrello e check-out}
+L'utente può aggiungere libri al carrello, che viene mantenuto localmente sul client stesso. Quando l'utente decide di procedere al checkout, i libri presenti nel carrello vengono inviati al server. Il server poi elabora la richiesta, gestendo il processo di prestito.\meskip
+La funzione \texttt{handle\_loan\_requests} gestisce le richieste di prestito di libri da parte del client. Essa svolge le seguenti operazioni principali:
+\begin{itemize}
+	\item Legge gli ISBN dei libri richiesti dal client e li memorizza in una lista fino a quando non riceve il messaggio "\texttt{STOP}".
+	\item Blocca un mutex (semaforo) per garantire l'accesso esclusivo alla sezione critica del codice che gestisce la creazione dei prestiti, poi chiama la funzione \texttt{create\_loans} per processare le richieste di prestito.
+	\item Dopo aver elaborato le richieste, invia un codice di stato al client per indicare se la query è riuscita o meno.
+	\item Sblocca il mutex al termine dell'operazione.
+\end{itemize}\medskip
+La richiesta di prestito di un libro è una sezione critica del sistema, poiché coinvolge la modifica dello stato, sul database, dei prestiti. In particolare, se un libro ha solo una copia disponibile e più utenti tentano di richiedere contemporaneamente il prestito di quel libro, il database potrebbe diventare inconsistente. Questo può succedere se entrambi i processi di richiesta vedono la copia come disponibile e procedono con l'assegnazione, portando a una situazione in cui il libro appare come prestato a più utenti contemporaneamente. L'uso di mutex garantisce che solo un processo possa effettuare la richiesta di prestito per quel libro alla volta, assicurando che il database rimanga coerente.
 
 \section{Gestione delle notifiche}
+Quando l'utente accede al sistema, il server verifica se ha prestiti scaduti che devono essere restituiti. Se l'utente ha prestiti scaduti, il server invia una notifica al client informandolo della situazione.
 
 \section{Funzioni speciali}
 La funzione \texttt{send\_string\_segmented} invia una stringa al client tramite il socket, suddividendo la stringa in segmenti di lunghezza massima definita da \texttt{MAX\_REQUEST\_BUFFER\_LENGTH}.\\
