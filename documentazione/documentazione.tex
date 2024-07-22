@@ -1,5 +1,7 @@
 \documentclass[]{report}
 
+\usepackage[italian]{babel}
+
 \input{settings/packages.tex}
 \input{settings/titles_settings.tex}
 \input{settings/page_style.tex}
@@ -23,6 +25,10 @@
 
 \newpage
 
+\tableofcontents
+
+\newpage
+
 \input{settings/table_of_contents.tex}
 
 \newpage
@@ -36,9 +42,34 @@
 \subsection{Notifiche agli utenti}
 
 \chapter{Implementazione}
-\section{Linguaggi di programmazione utilizzati}
-C e SQL
+\begin{sequencediagram}
+	\newthread{u}{User}
+	\newinst[2.9]{c}{Client}
+	\newinst[2.9]{s}{Server}
+	\newinst[2.9]{d}{Database}
 
+	\begin{messcall}{u}{\footnotesize Inserisce dati (se richiesto)}{c}
+		\begin{call}{c}{\texttt{funzione()}}{s}{risultato}
+			\begin{call}{s}{\texttt{handler()}}{s}{}
+				\begin{call}{s}{\texttt{funzione()}}{d}{}
+					\begin{callself}{d}{Esegue query}{}
+					\end{callself}
+				\end{call}
+			\end{call}
+		\end{call}
+	\end{messcall}
+\end{sequencediagram}\bskip
+Questo \textit{sequence diagram} descrive la maggior parte delle funzionalità presenti nel progetto.\\
+Viene fornito giusto un esempio per la registrazione nel paragrafo apposito.
+
+\section{Linguaggi utilizzati}
+Il progetto utilizza due linguaggi principali:
+\begin{itemize}
+	\item \textbf{C}: Il linguaggio C è utilizzato per lo sviluppo dell'applicazione client-server. Il server e il client comunicano tramite socket, permettendo lo scambio di dati in rete.
+	\item \textbf{SQL}: Il linguaggio SQL è utilizzato per la gestione del database PostgreSQL. Il server si connette al database per eseguire operazioni di lettura e scrittura, gestendo le informazioni richieste dai client.
+\end{itemize}
+
+\newpage
 \section{Struttura del codice}
 Il progetto è organizzato in una struttura di cartelle che separa logicamente i vari componenti del progetto.\\
 Questa organizzazione aiuta a mantenere il codice pulito, modulare e facile da gestire.\meskip
@@ -83,33 +114,65 @@ Centralizzare le configurazioni in una cartella dedicata facilita la gestione de
 \end{itemize}
 La separazione dei file SQL e del codice sorgente relativo al database aiuta a mantenere organizzate le operazioni di gestione del database e facilita eventuali modifiche o aggiornamenti.
 
+\newpage
 
-
-
-
-
+\newpage
 \section{Registrazione e login}
-\subsection*{Client}
-\subsection*{Server}
+\begin{sequencediagram}
+	\newthread{u}{User}
+	\newinst[2.9]{c}{Client}
+	\newinst[2.9]{s}{Server}
+	\newinst[2.9]{d}{Database}
+
+	\begin{messcall}{u}{Inserisce credenziali}{c}
+		\begin{call}{c}{\texttt{sign\_up()}}{s}{risultato registrazione}
+			\begin{call}{s}{\texttt{handle\_signup()}}{s}{}
+				\begin{call}{s}{\texttt{sign\_up()}}{d}{}
+					\begin{callself}{d}{Esegue query}{}
+					\end{callself}
+				\end{call}
+			\end{call}
+		\end{call}
+	\end{messcall}
+\end{sequencediagram}\bskip
+L'utente inserisce le credenziali per la registrazione (\textit{sign\_up}) o l'accesso (\textit{sign\_in}). \\
+Il client invia tre messaggi al server:
+\begin{enumerate}
+	\item tipo di richiesta: \texttt{SIGN\_IN} o \texttt{SIGN\_UP}
+	\item username
+	\item password
+\end{enumerate}
+Il server elabora la richiesta eseguendo una query con i dati ricevuti e successivamente invia un messaggio al client per notificare l'esito dell'operazione, indicando se la richiesta è stata eseguita con successo o meno.
 
 \section{Gestione dei libri e del catalogo}
-\subsection*{Client}
-\subsection*{Server}
+Il client può inviare diverse richieste al server per ottenere informazioni sui libri presenti nel sistema. Il server risponde a queste richieste eseguendo specifiche funzioni che interrogano il database.\\
+Di seguito, una panoramica delle funzionalità disponibili:
+\begin{enumerate}
+	\item Visualizzare l'intero catalogo
+	\item Visualizzare solo i libri disponibili
+	\item Cercare libri per genere
+	\item Cercare libri per titolo
+\end{enumerate}
+Tutte queste funzioni restituiscono i risultati in formato JSON.
+Invece di inviare una stringa per volta per poi dover scomporre ogni campo, tramite JSON si facilita l'integrazione lato client.
 
 \section{Prestito e restituzione libri}
-\subsection*{Client}
-\subsection*{Server}
-
+Il client può interagire con il server per gestire i prestiti dei libri. Il server offre diverse funzionalità per supportare queste operazioni:
+\begin{enumerate}
+	\item Creare un nuovo prestito
+	\item Visualizzare i libri attualmente in prestito
+	\item Restituire un libro
+\end{enumerate}
 \section{Carrello e check-out}
-\subsection*{Client}
-\subsection*{Server}
 
 \section{Gestione delle notifiche}
-\subsection*{Client}
-\subsection*{Server}
 
-
-
+\section{Funzioni speciali}
+La funzione \texttt{send\_string\_segmented} invia una stringa al client tramite il socket, suddividendo la stringa in segmenti di lunghezza massima definita da \texttt{MAX\_REQUEST\_BUFFER\_LENGTH}.\\
+Iterativamente ogni segmento viene inviato al client in maniera ordinata. \meskip
+La funzione \texttt{recv\_and\_compose\_segmented\_string}, riceve una stringa di lunghezza \\ massima \texttt{MAX\_REQUEST\_BUFFER\_LENGTH}; esegue questo processo iterativamente, accodando il nuovo segmento al segmento precedente.\\
+Al termine, la funzione restituisce l'intera stringa.\bskip
+Queste funzioni sono necessarie per gestire l'invio e la ricezione di dati di lunghezza variabile poiché TCP non garantisce che tutti i dati vengano ricevuti in una singola operazione, specialmente se i dati sono di grandi dimensioni.
 
 
 \chapter{Database}
