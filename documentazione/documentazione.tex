@@ -28,18 +28,26 @@
 \tableofcontents
 
 \newpage
-
-\input{settings/table_of_contents.tex}
-
-\newpage
 \chapter{Analisi dei requisiti}
 \section{Obiettivo del progetto}
+Il progetto consiste nella simulazione di un sistema che modella una libreria per un numero non specificato di utenti. Gli utenti devono potersi registrare e accedere al server per interagire con la libreria, che contiene una lista di libri disponibili. Il sistema deve gestire il prestito dei libri, tenere traccia delle copie disponibili e delle copie prese in prestito, oltre a monitorare le scadenze di restituzione.
+
 \section{Funzionalità principali}
-\subsection{Registrazione e login utenti}
-\subsection{Gestione del catalogo dei libri}
-\subsection{Prestito di libri}
-\subsection{Gestione del carrello e check-out}
-\subsection{Notifiche agli utenti}
+\begin{itemize}
+
+	\item \textbf{Registrazione e Login degli Utenti}:\\
+	      Gli utenti devono potersi registrare e loggare al server per poter utilizzare il sistema.
+	\item \textbf{Gestione dei Libri}:\\
+	      Il sistema mantiene una lista di libri disponibili nella libreria, con dettagli come il numero di copie disponibili e il numero di copie prese in prestito, oltre alla gestione di questa.
+	\item \textbf{Ricerca dei Libri}:\\
+	      Gli utenti possono cercare i libri disponibili nella libreria.\\
+	      La ricerca può essere fatta per genere, nome o visualizzare la lista di quelli disponibili.
+	\item \textbf{Prestito dei Libri}:\\
+	      Gli utenti possono prendere in prestito i libri se ci sono ancora copie disponibili.\\
+	      Gli utenti possono mettere nel carrello tutti i libri che intendono prendere in prestito e poi effettuare il check-out.
+	\item \textbf{Notifiche}:\\
+	      Il libraio deve contattare i clienti che non hanno restituito i libri dopo la scadenza prevista tramite un messaggio.
+\end{itemize}
 
 \chapter{Implementazione}
 \begin{sequencediagram}
@@ -185,33 +193,32 @@ La funzione \texttt{recv\_and\_compose\_segmented\_string}, riceve una stringa d
 Al termine, la funzione restituisce l'intera stringa.\bskip
 Queste funzioni sono necessarie per gestire l'invio e la ricezione di dati di lunghezza variabile poiché TCP non garantisce che tutti i dati vengano ricevuti in una singola operazione, specialmente se i dati sono di grandi dimensioni.
 
-
 \chapter{Database}
 \section{Schema}
 \begin{tikzpicture}
 	% User table
 	\begin{class}[text width=6cm]{user}{0,-7}
-		\attribute{username: TEXT}
-		\attribute{passw: TEXT}
+		\attribute{username: \texttt{TEXT}}
+		\attribute{passw: \texttt{TEXT}}
 	\end{class}
 
 	% Book table
 	\begin{class}[text width=7cm]{book}{10,-7}
-		\attribute{isbn: TEXT}
-		\attribute{title: TEXT}
-		\attribute{authors: TEXT[]}
-		\attribute{genre: TEXT[]}
-		\attribute{quantity: INTEGER}
+		\attribute{isbn: \texttt{TEXT}}
+		\attribute{title: \texttt{TEXT}}
+		\attribute{authors: \texttt{TEXT[]}}
+		\attribute{genre: \texttt{TEXT[]}}
+		\attribute{quantity: \texttt{INTEGER}}
 	\end{class}
 
 	% Loan table
 	\begin{class}[text width=8cm]{loan}{5,0}
-		\attribute{id: SERIAL}
-		\attribute{loan\_start: TIMESTAMP WITH TIME ZONE}
-		\attribute{loan\_end: TIMESTAMP WITH TIME ZONE}
-		\attribute{returned: TIMESTAMP WITH TIME ZONE}
-		\attribute{username: TEXT}
-		\attribute{isbn: TEXT}
+		\attribute{id: \texttt{SERIAL}}
+		\attribute{loan\_start: \texttt{TIMESTAMP WITH TIME ZONE}}
+		\attribute{loan\_end: \texttt{TIMESTAMP WITH TIME ZONE}}
+		\attribute{returned: \texttt{TIMESTAMP WITH TIME ZONE}}
+		\attribute{username: \texttt{TEXT}}
+		\attribute{isbn: \texttt{TEXT}}
 	\end{class}
 
 	% Relationships
@@ -228,8 +235,8 @@ La tabella registra le date di inizio e fine prevista del prestito, nonché la d
 I campi \texttt{username} e \texttt{isbn} fungono da chiavi esterne. Questa struttura permette di tracciare efficacemente chi ha preso in prestito quale libro e quando.
 
 \section{Trigger}
-Il trigger \texttt{check\_book\_availability} verifica se un libro è disponibile prima di registrare un nuovo prestito. 
-Quando viene eseguita, la funzione esamina la quantità di copie disponibili del libro: 
+Il trigger \texttt{check\_book\_availability} verifica se un libro è disponibile prima di registrare un nuovo prestito.
+Quando viene eseguita, la funzione esamina la quantità di copie disponibili del libro:
 se il libro è disponibile inserisce il prestito; se il libro non è disponibile, viene sollevata un'eccezione, impedendo così l'inserimento del prestito e notificando l'utente che il libro non può essere prestato.\bskip
 Il trigger \texttt{set\_loan\_dates} imposta la data di inizio del prestito alla data e ora corrente, e la data di fine a 30 giorni dalla data di inizio
 
