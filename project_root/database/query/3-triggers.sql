@@ -11,8 +11,6 @@ BEGIN
 
     -- Controlla se ci sono abbastanza copie disponibili per il prestito
     IF available_quantity > 0 THEN
-        NEW.loan_start := current_timestamp;
-        NEW.loan_end := current_timestamp + interval '30 day';
         RETURN NEW;
     ELSE
         RAISE EXCEPTION 'Il libro con ISBN % non è disponibile per il prestito.', NEW.isbn;

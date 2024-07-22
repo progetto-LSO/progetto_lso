@@ -227,8 +227,14 @@ La tabella \texttt{\underline{loan}} gestisce le informazioni relative ai presti
 La tabella registra le date di inizio e fine prevista del prestito, nonché la data effettiva di restituzione (che può essere \texttt{null} per i prestiti in corso).\sskip
 I campi \texttt{username} e \texttt{isbn} fungono da chiavi esterne. Questa struttura permette di tracciare efficacemente chi ha preso in prestito quale libro e quando.
 
+\section{Trigger}
+Il trigger \texttt{check\_book\_availability} verifica se un libro è disponibile prima di registrare un nuovo prestito. 
+Quando viene eseguita, la funzione esamina la quantità di copie disponibili del libro: 
+se il libro è disponibile inserisce il prestito; se il libro non è disponibile, viene sollevata un'eccezione, impedendo così l'inserimento del prestito e notificando l'utente che il libro non può essere prestato.\bskip
+Il trigger \texttt{set\_loan\_dates} imposta la data di inizio del prestito alla data e ora corrente, e la data di fine a 30 giorni dalla data di inizio
 
-\section{Query principali utilizzate}
+
+
 
 
 \end{document}
