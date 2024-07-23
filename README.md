@@ -1,4 +1,6 @@
 # Progetto LSO
+[Link documentazione](/documentazione/documentazione.pdf)
+
 ## Avvio con Docker Compose
 Spostati nella cartella `project_root`
 
