@@ -1,4 +1,12 @@
 # Progetto LSO
+## Componenti del gruppo
+Ingenito Roberto - N86004077
+
+Ingenito Simone - N86004063
+
+Sequino Lorenzo - N86004367
+
+## Documentazione
 [Link documentazione](/documentazione/documentazione.pdf)
 
 ## Avvio con Docker Compose
