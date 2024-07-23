@@ -197,13 +197,13 @@ Queste funzioni sono necessarie per gestire l'invio e la ricezione di dati di lu
 \section{Schema}
 \begin{tikzpicture}
 	% User table
-	\begin{class}[text width=6cm]{user}{0,-7}
+	\begin{class}[text width=6cm]{user}{0,-6}
 		\attribute{username: \texttt{TEXT}}
 		\attribute{passw: \texttt{TEXT}}
 	\end{class}
 
 	% Book table
-	\begin{class}[text width=7cm]{book}{10,-7}
+	\begin{class}[text width=7cm]{book}{10,-6}
 		\attribute{isbn: \texttt{TEXT}}
 		\attribute{title: \texttt{TEXT}}
 		\attribute{authors: \texttt{TEXT[]}}
@@ -240,12 +240,55 @@ Quando viene eseguita, la funzione esamina la quantità di copie disponibili del
 se il libro è disponibile inserisce il prestito; se il libro non è disponibile, viene sollevata un'eccezione, impedendo così l'inserimento del prestito e notificando l'utente che il libro non può essere prestato.\bskip
 Il trigger \texttt{set\_loan\_dates} imposta la data di inizio del prestito alla data e ora corrente, e la data di fine a 30 giorni dalla data di inizio
 
+\section{View}
+Come si può intuire dal nome, \texttt{available\_books} è una \textit{view} che "aggiunge" alla tabella \texttt{book} il campo \\
+\texttt{available\_quantity}, ovvero un intero che indica la quantità disponibile per quel libro.
 
+\chapter{Docker}
+\section{Client}
+Il dockerfile del client utilizza l'immagine di base \texttt{gcc} per compilare e prepara l'ambiente per la compilazione del client:
+\begin{enumerate}
+	\item installazione delle dipendenze di sistema, tra cui le librerie per \texttt{postgres} e \texttt{cJSON}
+	\item creazione delle cartelle di lavoro nella directory \texttt{/app}
+	\item imposta la directory di lavoro a \texttt{/app}
+	\item copia i file sorgente nelle cartelle precedentemente create
+	\item esegue il comando per compilare il client e successivamente il container entra in uno stato di sonno infinito mantenendo il container in esecuzione senza terminarlo, permettendo all'utente di accedere al container per ulteriori operazioni.
+\end{enumerate}
 
+\section{Server}
+Il dockerfile del server esegue le stesse operazioni specificate nel client fino al punto 4.\\
+Dopodichè espone la porta 8080, utile per strumenti come Docker Compose, che configura il routing basandosi su questa informazione.\sskip
+Quando il container viene avviato, non esegue alcun comando automaticamente (questo verrà specificato nel \textit{docker-compose}).
+
+\section{Compose}
+Il file \texttt{docker-compose.yml} definisce una configurazione di \texttt{docker compose} per un'applicazione composta da tre servizi principali:
+\begin{itemize}
+	\item Database
+	\item Client
+	\item Server
+\end{itemize} 
+
+\subsubsection*{Database}
+Il database usa l'immagine di \textit{postgres} per creare il container e specifica dei \textit{volumes} tra cui:
+ \begin{itemize}
+	\item \texttt{db\_data} per la persistenza dei dati
+	\item monta la directory locale dove sono contenute le query che verranno eseguite alla creazione del database.
+ \end{itemize}
+Il database si collega alla rete Docker "\textit{library}" senza specifare un indirizzo IP poiché non è strettamente necessario per il suo funzionamento, dato che Docker ne gestisce automaticamente l'assegnazione.
+
+\subsubsection*{Client}
+Il servizio \textit{client} crea un'immagine \textit{library\_client} basato sul dockerfile presente nella cartella \texttt{./client}
+
+\subsubsection*{Server}
+Il servizio \textit{server} crea un'immagine \textit{library\_server} basato sul dockerfile presente nella cartella \texttt{./server} .\sskip
+Al server viene assegnato un indirizzo IP specifico che servirà al client per stabilire la connessione tramite socket.
+
+\subsection{Network}
+La sezione \texttt{networks} definisce una rete che i servizi utilizzano per comunicare tra loro.\sskip
+Specifica il tipo di rete a "\textit{bridge}", un tipo di rete che collega i container tra loro e all'host Docker.
 
 
 \end{document}
-
 
 
 
