@@ -28,9 +28,15 @@ EXECUTE FUNCTION check_book_availability();
 CREATE OR REPLACE FUNCTION set_loan_dates() 
 RETURNS TRIGGER AS $$
 BEGIN
+    IF NEW.loan_start is null THEN
         NEW.loan_start := current_timestamp;
+    END IF;
+
+    IF NEW.loan_end is null THEN
         NEW.loan_end := current_timestamp + interval '30 day';
-        RETURN NEW;
+    END IF;
+
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 

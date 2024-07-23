@@ -29,3 +29,6 @@ INSERT INTO book (isbn, title, authors, genre, quantity) VALUES
 ('978-1-4767-8743-0', 'The Institute', ARRAY['Stephen King'], ARRAY['Horror', 'Thriller'], 8),
 ('978-0-06-287067-0', 'The Water Dancer', ARRAY['Ta-Nehisi Coates'], ARRAY['Historical Fiction', 'Fantasy'], 10),
 ('978-1-250-31231-0', 'The Vanishing Half', ARRAY['Brit Bennett'], ARRAY['Historical Fiction'], 1);
+
+INSERT INTO public.user (username, passw) VALUES ('pippo', 'pluto');
+INSERT INTO public.loan (username, isbn, loan_start, loan_end, returned) VALUES ('pippo', '978-0-06-287067-0', CURRENT_TIMESTAMP - interval '2 month', CURRENT_TIMESTAMP - interval '1 month', null);
