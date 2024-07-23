@@ -227,7 +227,7 @@ Queste funzioni sono necessarie per gestire l'invio e la ricezione di dati di lu
 \end{tikzpicture}
 
 \section{Descrizione delle tabelle}
-La tabella \texttt{\underline{user}} è gestisce gli utenti del sistema.\\
+La tabella \texttt{\underline{user}} gestisce gli utenti del sistema.\\
 Ogni record in questa tabella rappresenta un singolo utente, identificato univocamente dal campo \texttt{username} il quale funge anche da chiave primaria, garantendo cosi anche l'unicità.\bskip
 La tabella \texttt{\underline{book}} contiene le informazioni relative ai libri presenti nel catalogo della biblioteca. Ogni libro è identificato dal suo codice \texttt{ISBN}, che funge da chiave primaria. La tabella include campi anche per gli autori e i generi, entrambi memorizzati come array per gestire libri con molteplici autori o appartenenti a più generi. Il campo \texttt{quantity} tiene traccia del numero di copie disponibili per ciascun titolo, con un vincolo che assicura che questo valore non possa essere negativo.\bskip
 La tabella \texttt{\underline{loan}} gestisce le informazioni relative ai prestiti dei libri. Ogni prestito è identificato da un \texttt{ID}.\sskip
