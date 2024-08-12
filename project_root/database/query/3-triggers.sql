@@ -27,13 +27,15 @@ EXECUTE FUNCTION check_book_availability();
 
 CREATE OR REPLACE FUNCTION set_loan_dates() 
 RETURNS TRIGGER AS $$
+DECLARE
+    _loan_duration INTEGER := (SELECT value::INTEGER FROM public.system_settings WHERE key = 'loan_duration');
 BEGIN
     IF NEW.loan_start is null THEN
         NEW.loan_start := current_timestamp;
     END IF;
 
     IF NEW.loan_end is null THEN
-        NEW.loan_end := current_timestamp + interval '30 day';
+        NEW.loan_end := current_timestamp + INTERVAL '1 day' * _loan_duration;
     END IF;
 
     RETURN NEW;
