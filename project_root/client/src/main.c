@@ -47,6 +47,7 @@ int main() {
         printf("5. Visualizza prestiti\n");
         printf("6. Esci\n\n");
         printf("Inserisci la tua scelta: ");
+        fflush(stdin);
         scanf("%d", &scelta);
 
         switch (scelta) {

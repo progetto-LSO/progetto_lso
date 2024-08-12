@@ -12,6 +12,7 @@
 #include "../../config/request_config.h"
 
 #define STRING_BUFFER_LENGTH 256
+#define fflush(stdin) while ((getchar()) != '\n')
 
 extern char username[STRING_BUFFER_LENGTH];
 extern ListNode *carrello;
