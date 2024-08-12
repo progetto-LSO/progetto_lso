@@ -31,3 +31,8 @@ CREATE TABLE loan (
     
     CONSTRAINT check_loan_validity CHECK (loan_end > loan_start)
 );
+
+CREATE TABLE system_settings (
+    key TEXT PRIMARY KEY, 
+    value TEXT
+);
