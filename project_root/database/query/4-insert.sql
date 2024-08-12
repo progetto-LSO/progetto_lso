@@ -32,3 +32,4 @@ INSERT INTO book (isbn, title, authors, genre, quantity) VALUES
 
 INSERT INTO public.user (username, passw) VALUES ('pippo', 'pluto');
 INSERT INTO public.loan (username, isbn, loan_start, loan_end, returned) VALUES ('pippo', '978-0-06-287067-0', CURRENT_TIMESTAMP - interval '2 month', CURRENT_TIMESTAMP - interval '1 month', null);
+INSERT INTO public.system_settings (key, value) VALUES ('loan_duration', '30');
