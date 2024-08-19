@@ -65,6 +65,16 @@ services:
     networks:
       - library
 
+  library_admin:
+    image: library_admin
+    build:
+      context: ./library_admin
+    volumes:
+      - ./config:/app/config
+      - ./Makefile:/app/Makefile
+    networks:
+      - library
+
 volumes:
   db_data:
   pg-admin-data:
