@@ -25,6 +25,8 @@ int main(int argc, char const *argv[])
 
     struct sockaddr_in server_address;
 
+    int scelta;
+
     // configurazione indirizzo server
     address_config(&server_address, SERVER_ADDRESS, SERVER_PORT);
 
@@ -33,6 +35,34 @@ int main(int argc, char const *argv[])
 
     // Connessione al server
     connection_to_server(library_admin_socket, &server_address);
+
+    while (1)
+    {
+        system("clear");
+
+        printf("---------- MENU ----------\n");
+        printf("1. Modifica durata prestito\n");
+        printf("2. Visualizza utenti con prestiti scaduti\n");
+        printf("3. Esci\n\n");
+        printf("Inserisci la tua scelta: ");
+        scanf("%d", &scelta);
+
+        switch (scelta)
+        {
+        case 1:
+
+            break;
+        case 2:
+
+            break;
+        case 3:
+            close(library_admin_socket);
+            exit(EXIT_SUCCESS);
+            break;
+        default:
+            break;
+        }
+    }
 
     return 0;
 }
