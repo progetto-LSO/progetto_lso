@@ -16,8 +16,6 @@ void sig_handler(int signo) {
 }
 
 int main() {
-    show_auth_menu(client_socket);
-    return 0;
     // Imposta il gestore di segnali per SIGINT e SIGTERM
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
