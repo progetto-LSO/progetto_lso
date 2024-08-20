@@ -16,6 +16,8 @@ void sig_handler(int signo) {
 }
 
 int main() {
+    show_auth_menu(client_socket);
+    return 0;
     // Imposta il gestore di segnali per SIGINT e SIGTERM
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
@@ -47,8 +49,8 @@ int main() {
         printf("5. Visualizza prestiti\n");
         printf("6. Esci\n\n");
         printf("Inserisci la tua scelta: ");
-        fflush(stdin);
         scanf("%d", &scelta);
+        fflush(stdin);
 
         switch (scelta) {
             case 1:
