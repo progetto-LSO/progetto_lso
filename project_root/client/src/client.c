@@ -95,6 +95,7 @@ char *recv_and_compose_segmented_string(int client_socket) {
 
 void press_key_to_continue() {
     printf("Premi invio per continuare...");
+    fflush(stdin);
     getchar();  // Per aspettare l'invio da parte dell'utente
 }
 
@@ -109,11 +110,9 @@ int sign_in(int client_socket) {
     printf("-------- SIGN IN --------\n");
     printf("Username: ");
     scanf("%s", _username);
-    fflush(stdin);
 
     printf("Password: ");
     scanf("%s", password);
-    fflush(stdin);
 
     if ((send(client_socket, (int *)&request_type, sizeof(request_type), 0)) == -1) {
         perror("Error to send message");
@@ -167,11 +166,9 @@ int sign_up(int client_socket) {
     printf("-------- SIGN UP --------\n");
     printf("Username: ");
     scanf("%s", _username);
-    fflush(stdin);
 
     printf("Password: ");
     scanf("%s", password);
-    fflush(stdin);
 
     if ((send(client_socket, (int *)&request_type, sizeof(request_type), 0)) == -1) {
         perror("Error to send message");
@@ -216,7 +213,6 @@ void show_auth_menu(int client_socket) {
         printf("Scegli un'opzione: ");
 
         scanf("%d", &scelta);
-        fflush(stdin);
 
         system("clear");
         switch (scelta) {
@@ -300,12 +296,12 @@ ListNode *search_book_by(int client_socket, int search_type) {
         case 0:
             printf("Inserisci il nome del libro: ");
             scanf("%s", search_key);
-            fflush(stdin);
+
             break;
         case 1:
             printf("Inserisci il genere del libro: ");
             scanf("%s", search_key);
-            fflush(stdin);
+
             break;
         case 2:
         case 3:
@@ -410,7 +406,6 @@ void loan_request(int client_socket) {
         printf("4. Torna indietro\n\n");
         printf("Scegli un'opzione: ");
         scanf("%d", &scelta);
-        fflush(stdin);
 
         system("clear");
 
@@ -419,7 +414,7 @@ void loan_request(int client_socket) {
                 print_list(catalogo);
                 printf("Inserisci il numero del libro: \n");
                 scanf("%d", &indice_libro_scelto);
-                fflush(stdin);
+
                 insert_book(&carrello, catalogo, indice_libro_scelto);
                 press_key_to_continue();
                 break;
@@ -539,13 +534,11 @@ void view_loans(int client_socket) {
         printf("2. Torna indietro\n\n");
         printf("Scegli un'opzione: ");
         scanf("%d", &scelta);
-        fflush(stdin);
 
         switch (scelta) {
             case 1:
                 printf("Inserisci il numero del libro: \n");
                 scanf("%d", &indice_libro_scelto);
-                fflush(stdin);
 
                 LoanListNode *loan = get_ith_loan_element(loan_books, indice_libro_scelto - 1);
 

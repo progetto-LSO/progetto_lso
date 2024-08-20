@@ -50,7 +50,7 @@ int main() {
         printf("6. Esci\n\n");
         printf("Inserisci la tua scelta: ");
         scanf("%d", &scelta);
-        fflush(stdin);
+        
 
         switch (scelta) {
             case 1:
