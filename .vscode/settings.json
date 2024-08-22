@@ -23,7 +23,9 @@
         "requests_handler.h": "c",
         "list.h": "c",
         "time.h": "c",
-        "loan_list.h": "c"
+        "loan_list.h": "c",
+        "library_admin.h": "c",
+        "ctype.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

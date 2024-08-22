@@ -3,6 +3,7 @@
 
 #include "../../config/address_config.h"
 #include "../include/socket.h"
+#include "../include/library_admin.h"
 
 static int library_admin_socket;
 
@@ -50,10 +51,10 @@ int main(int argc, char const *argv[])
         switch (scelta)
         {
         case 1:
-
+            change_loan_duration(library_admin_socket);
             break;
         case 2:
-
+            get_expired_loan(library_admin_socket);
             break;
         case 3:
             close(library_admin_socket);
