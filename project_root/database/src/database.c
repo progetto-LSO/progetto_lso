@@ -2,27 +2,33 @@
 
 PGconn *connection = NULL;
 
-void disconnect_database() {
+void disconnect_database()
+{
     PQfinish(connection);
 }
 
-void connect_database() {
+void connect_database()
+{
     char conn_info[256];
     sprintf(conn_info,
             "host=%s dbname=%s user=%s password=%s",
             DB_HOST, DB_NAME, DB_USER, DB_PASSWORD);
     connection = PQconnectdb(conn_info);
-    if (PQstatus(connection) != CONNECTION_OK) {
+    if (PQstatus(connection) != CONNECTION_OK)
+    {
         fprintf(stderr, "Connection to database failed: %s\n", PQerrorMessage(connection));
         disconnect_database();
         exit(EXIT_FAILURE);
-    } else {
+    }
+    else
+    {
         printf("Server connesso al database postgres\n\n");
     }
 }
 
 // registrazione utente sul database, insert into user
-int sign_up(const char *username, const char *password) {
+int sign_up(const char *username, const char *password)
+{
     char query_string[256];
     PGresult *res = NULL;
 
@@ -37,18 +43,22 @@ int sign_up(const char *username, const char *password) {
     res = PQexec(connection, query_string);
 
     // la query non restituisce tuple, se è andata a buon fine il suo result status dovrebbe essere: PGRES_COMMAND_OK
-    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(res);
         return 1;
-    } else {
+    }
+    else
+    {
         PQclear(res);
         return 0;
     }
 }
 
 // login dell'utente sul database, select from user
-int sign_in(const char *username, const char *password) {
+int sign_in(const char *username, const char *password)
+{
     char query_string[256];
     PGresult *res = NULL;
 
@@ -63,21 +73,27 @@ int sign_in(const char *username, const char *password) {
     res = PQexec(connection, query_string);
 
     // la query restituisce tuple, se è andata a buon fine il suo result status dovrebbe essere: PGRES_TUPLES_OK
-    if (PQresultStatus(res) != PGRES_TUPLES_OK) {
+    if (PQresultStatus(res) != PGRES_TUPLES_OK)
+    {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(res);
         return 1;
-    } else if (PQntuples(res) != 1) {
+    }
+    else if (PQntuples(res) != 1)
+    {
         PQclear(res);
         return 1;
-    } else {
+    }
+    else
+    {
         PQclear(res);
         return 0;
     }
 }
 
 // salva in res tutti i libri salvati sul dabatase, select from book
-int get_books(PGresult **res) {
+int get_books(PGresult **res)
+{
     char query_string[256] =
         "SELECT coalesce(json_agg(row), '[]'::json) "
         "FROM ( "
@@ -88,7 +104,8 @@ int get_books(PGresult **res) {
     printf("Executing Query: %s \n", query_string);
     *res = PQexec(connection, query_string);
 
-    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK) {
+    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK)
+    {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(*(res));
         return 1;
@@ -98,7 +115,8 @@ int get_books(PGresult **res) {
 }
 
 // salva in res tutti i libri per cui la disponibilità non supera il numero di loan effettuati per quel libro
-int search_available_books(PGresult **res) {
+int search_available_books(PGresult **res)
+{
     char *query_string =
         "SELECT coalesce(json_agg(row), '[]'::json) "
         "FROM ( "
@@ -109,7 +127,8 @@ int search_available_books(PGresult **res) {
     printf("Executing Query: %s \n", query_string);
     *res = PQexec(connection, query_string);
 
-    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK) {
+    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK)
+    {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(*(res));
         return 1;
@@ -119,7 +138,8 @@ int search_available_books(PGresult **res) {
 }
 
 // salva in res tutti i libri di un certo genere
-int search_books_by_genre(PGresult **res, const char *book_genre) {
+int search_books_by_genre(PGresult **res, const char *book_genre)
+{
     char query[256];
 
     sprintf(query,
@@ -133,7 +153,8 @@ int search_books_by_genre(PGresult **res, const char *book_genre) {
 
     *res = PQexec(connection, query);
 
-    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK) {
+    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK)
+    {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(*(res));
         return 1;
@@ -143,7 +164,8 @@ int search_books_by_genre(PGresult **res, const char *book_genre) {
 }
 
 // salva in res il libro con il nome specificato
-int search_books_by_name(PGresult **res, const char *book_name) {
+int search_books_by_name(PGresult **res, const char *book_name)
+{
     char query_string[256];
 
     sprintf(query_string,
@@ -160,17 +182,21 @@ int search_books_by_name(PGresult **res, const char *book_name) {
     // esecuzione query
     *res = PQexec(connection, query_string);
 
-    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK) {
+    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK)
+    {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(*(res));
         return 1;
-    } else {
+    }
+    else
+    {
         return 0;
     }
 }
 
 // aggiorna lo stato del prestito quando il libro viene restituito
-int return_book(int loan_id) {
+int return_book(int loan_id)
+{
     char query_string[500];
     PGresult *res = NULL;
 
@@ -185,27 +211,34 @@ int return_book(int loan_id) {
     res = PQexec(connection, query_string);
 
     // la query non restituisce tuple, se è andata a buon fine il suo result status dovrebbe essere: PGRES_COMMAND_OK
-    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(res);
         return 1;
-    } else {
+    }
+    else
+    {
         PQclear(res);
         return 0;
     }
 }
 
 // dato un generico risultato di una query, ne stampa a video l'intera struttura
-void print_query_result(PGresult *res) {
-    for (int i = 0; i < PQntuples(res); i++) {
-        for (int j = 0; j < PQnfields(res); j++) {
+void print_query_result(PGresult *res)
+{
+    for (int i = 0; i < PQntuples(res); i++)
+    {
+        for (int j = 0; j < PQnfields(res); j++)
+        {
             printf("%s\t", PQgetvalue(res, i, j));
         }
         printf("\n");
     }
 }
 
-int create_loans(const char *username, ListNode *list) {
+int create_loans(const char *username, ListNode *list)
+{
     PGresult *res = NULL;
 
     // Allocazione iniziale di memoria per la query
@@ -213,30 +246,35 @@ int create_loans(const char *username, ListNode *list) {
     char *query_string = malloc(query_size * sizeof(char));
 
     // Errore di allocazione della memoria
-    if (query_string == NULL) return 1;
+    if (query_string == NULL)
+        return 1;
 
     // Inizializzazione della query string
     strcpy(query_string, "INSERT INTO loan (username, isbn) VALUES ");
 
     // formattazione query
-    while (list != NULL) {
+    while (list != NULL)
+    {
         char values[MAX_REQUEST_BUFFER_LENGTH * 3];
         sprintf(values, "('%s', '%s')", username, list->isbn);
 
         // Controlla se c'è abbastanza spazio per concatenare values a query_string
         // se la stringa attuale più quella nuova, supera l'attuale dimensione della stringa
         //      allora la realloca aumentado la dimensione del doppio
-        if (strlen(query_string) + strlen(values) + 3 > query_size) {  // +3 per ", " o terminatore null
+        if (strlen(query_string) + strlen(values) + 3 > query_size)
+        { // +3 per ", " o terminatore null
             query_size *= 2;
             query_string = realloc(query_string, query_size);
-            if (query_string == NULL) return 1;  // Errore di riallocazione
+            if (query_string == NULL)
+                return 1; // Errore di riallocazione
         }
 
         strcat(query_string, values);
         list = list->next;
 
         // finche c'è un valore da inserire, inserisce una virgola
-        if (list != NULL) strcat(query_string, ", ");
+        if (list != NULL)
+            strcat(query_string, ", ");
     }
 
     // esecuzione query
@@ -247,18 +285,22 @@ int create_loans(const char *username, ListNode *list) {
     free(query_string);
 
     // la query non restituisce tuple, se è andata a buon fine il suo result status dovrebbe essere: PGRES_COMMAND_OK
-    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(res);
         return 1;
-    } else {
+    }
+    else
+    {
         PQclear(res);
         return 0;
     }
 }
 
 // salva in res i libri attualmente presi in prestito dall'utente
-int get_loan_books(PGresult **res, const char *username) {
+int get_loan_books(PGresult **res, const char *username)
+{
     char query_string[1024];
 
     sprintf(query_string,
@@ -277,7 +319,8 @@ int get_loan_books(PGresult **res, const char *username) {
     printf("Executing Query: %s \n", query_string);
     *res = PQexec(connection, query_string);
 
-    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK) {
+    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK)
+    {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(*(res));
         return 1;
@@ -286,7 +329,8 @@ int get_loan_books(PGresult **res, const char *username) {
     return 0;
 }
 
-int check_loan_expired(PGresult **res, const char *username) {
+int check_loan_expired(PGresult **res, const char *username)
+{
     char query[1024];
 
     sprintf(
@@ -303,7 +347,76 @@ int check_loan_expired(PGresult **res, const char *username) {
     printf("Executing Query: %s \n", query);
     *res = PQexec(connection, query);
 
-    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK) {
+    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK)
+    {
+        fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
+        PQclear(*(res));
+        return 1;
+    }
+
+    return 0;
+}
+
+int change_loan_duration(int new_duration)
+{
+    char query[1024];
+
+    sprintf(
+        query,
+        "UPDATE public.system_settings "
+        "SET value = '%d' "
+        "WHERE key = 'loan_duration';",
+        new_duration);
+
+    *res = PQexec(connection, query);
+
+    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+    {
+        fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
+        PQclear(res);
+        return 1;
+    }
+    else
+    {
+        PQclear(res);
+        return 0;
+    }
+}
+
+int get_expired_loan(PGresult **res)
+{
+    char query[1024] =
+        "SELECT coalesce(json_agg(row), '[]'::json) "
+        "FROM ( "
+        "    SELECT  "
+        "        username,  "
+        "        isbn, "
+        "        to_char(loan_end, 'DD/MM/YYYY - HH24:MI') as loan_end "
+        "    FROM public.loan "
+        "    WHERE "
+        "        current_timestamp > loan_end "
+        "        AND returned is null     "
+        ") as row; ";
+    *res = PQexec(connection, query);
+    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK)
+    {
+        fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
+        PQclear(*(res));
+        return 1;
+    }
+
+    return 0;
+}
+
+int get_current_loan_duration(PGresult **res)
+{
+    char query[1024] =
+        "SELECT value as loan_duration "
+        "FROM system_settings "
+        "WHERE key='loan_duration';";
+    *res = PQexec(connection, query);
+    if (PQresultStatus(*(res)) != PGRES_TUPLES_OK)
+    {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(*(res));
         return 1;
