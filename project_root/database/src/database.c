@@ -360,6 +360,7 @@ int check_loan_expired(PGresult **res, const char *username)
 int change_loan_duration(int new_duration)
 {
     char query[1024];
+    PGresult *res;
 
     sprintf(
         query,
@@ -368,7 +369,7 @@ int change_loan_duration(int new_duration)
         "WHERE key = 'loan_duration';",
         new_duration);
 
-    *res = PQexec(connection, query);
+    res = PQexec(connection, query);
 
     if (PQresultStatus(res) != PGRES_COMMAND_OK)
     {

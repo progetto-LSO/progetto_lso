@@ -2,23 +2,20 @@
 #include <unistd.h>
 
 #include "../../config/address_config.h"
-#include "../include/socket.h"
 #include "../include/library_admin.h"
+#include "../include/socket.h"
 
 static int library_admin_socket;
 
-void sig_handler(int signo)
-{
-    if (signo == SIGINT || signo == SIGTERM || signo == SIGKILL)
-    {
+void sig_handler(int signo) {
+    if (signo == SIGINT || signo == SIGTERM || signo == SIGKILL) {
         printf("Exiting... closing socket.\n");
-        close(library_admin_socket); // Chiude il socket prima di uscire
+        close(library_admin_socket);  // Chiude il socket prima di uscire
         exit(0);
     }
 }
 
-int main(int argc, char const *argv[])
-{
+int main() {
     // Imposta il gestore di segnali per SIGINT e SIGTERM
     signal(SIGINT, sig_handler);
     signal(SIGTERM, sig_handler);
@@ -37,8 +34,7 @@ int main(int argc, char const *argv[])
     // Connessione al server
     connection_to_server(library_admin_socket, &server_address);
 
-    while (1)
-    {
+    while (1) {
         system("clear");
 
         printf("---------- MENU ----------\n");
@@ -48,20 +44,20 @@ int main(int argc, char const *argv[])
         printf("Inserisci la tua scelta: ");
         scanf("%d", &scelta);
 
-        switch (scelta)
-        {
-        case 1:
-            change_loan_duration(library_admin_socket);
-            break;
-        case 2:
-            get_expired_loan(library_admin_socket);
-            break;
-        case 3:
-            close(library_admin_socket);
-            exit(EXIT_SUCCESS);
-            break;
-        default:
-            break;
+        switch (scelta) {
+            case 1:
+                change_loan_duration(library_admin_socket);
+                break;
+            case 2:
+                get_expired_loan(library_admin_socket);
+                press_key_to_continue();
+                break;
+            case 3:
+                close(library_admin_socket);
+                exit(EXIT_SUCCESS);
+                break;
+            default:
+                break;
         }
     }
 

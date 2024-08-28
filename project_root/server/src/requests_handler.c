@@ -298,7 +298,7 @@ void handle_return_book(int client_socket)
     send(client_socket, (int *)&query_result, sizeof(query_result), 0);
 }
 
-void handle_change_loan_duration(client_socket)
+void handle_change_loan_duration(int client_socket)
 {
     int new_duration;
     ssize_t result = recv(client_socket, (int *)&new_duration, sizeof(new_duration), 0);
@@ -310,7 +310,7 @@ void handle_change_loan_duration(client_socket)
     change_loan_duration(new_duration);
 }
 
-void handle_get_exiped_loan(client_socket)
+void handle_get_exiped_loan(int client_socket)
 {
     PGresult *result;
     int query_result = get_expired_loan(&result);
@@ -320,7 +320,7 @@ void handle_get_exiped_loan(client_socket)
     }
 }
 
-void handle_get_current_loan_duration(client_socket)
+void handle_get_current_loan_duration(int client_socket)
 {
     int current_duration;
     PGresult *result;

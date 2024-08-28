@@ -9,6 +9,8 @@
 
 #include "../../config/request_config.h"
 
+void press_key_to_continue() ;
+
 void change_loan_duration(int library_socket);
 
 void get_expired_loan(int library_socket);
