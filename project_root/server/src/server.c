@@ -81,12 +81,15 @@ void *client_request_handler(void *socket)
             break;
 
         case CHANGE_LOAN_DURATION:
+            handle_change_loan_duration(client_socket);
             break;
 
         case GET_EXPIRED_LOAN:
+            handle_get_exiped_loan(client_socket);
             break;
 
         case GET_CURRENT_LOAN_DURATION:
+            handle_get_current_loan_duration(client_socket);
             break;
 
         default:

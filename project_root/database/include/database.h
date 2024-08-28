@@ -29,3 +29,9 @@ int return_book(int loan_id);
 void print_query_result(PGresult *res);
 
 int check_loan_expired(PGresult **res, const char *username);
+
+int change_loan_duration(int new_duration);
+
+int get_expired_loan(PGresult **res);
+
+int get_current_loan_duration(PGresult **res);
