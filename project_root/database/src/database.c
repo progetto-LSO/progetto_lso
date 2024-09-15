@@ -357,6 +357,7 @@ int check_loan_expired(PGresult **res, const char *username)
     return 0;
 }
 
+//Aggiorna il valore della durata del prestito nel database
 int change_loan_duration(int new_duration)
 {
     char query[1024];
@@ -369,9 +370,9 @@ int change_loan_duration(int new_duration)
         "WHERE key = 'loan_duration';",
         new_duration);
 
-    res = PQexec(connection, query);
+    res = PQexec(connection, query); //eseguo la query SQL sul DB
 
-    if (PQresultStatus(res) != PGRES_COMMAND_OK)
+    if (PQresultStatus(res) != PGRES_COMMAND_OK) //verifico se l'esecuzione della query ha avuto successo
     {
         fprintf(stderr, "Query Failed: %s \n", PQerrorMessage(connection));
         PQclear(res);
@@ -383,7 +384,7 @@ int change_loan_duration(int new_duration)
         return 0;
     }
 }
-
+//Interrogo il DB alla ricerca dei prestiti scaduti
 int get_expired_loan(PGresult **res)
 {
     char query[1024] =
@@ -408,7 +409,7 @@ int get_expired_loan(PGresult **res)
 
     return 0;
 }
-
+//Per ottenere il valore corrente della durata di un prestito
 int get_current_loan_duration(PGresult **res)
 {
     char query[1024] =

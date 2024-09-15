@@ -1,12 +1,14 @@
 #include "../include/library_admin.h"
 #define fflush(stdin) while ((getchar()) != '\n')
 
+//Funzione che ferma temporaneamente l'esecuzione del programma
 void press_key_to_continue() {
     printf("Premi invio per continuare...");
     fflush(stdin);
     getchar();  // Per aspettare l'invio da parte dell'utente
 }
 
+//Funzione che permette la visualizzazione e la modifica della durata del prestito
 void change_loan_duration(int library_socket) {
     int request_type = GET_CURRENT_LOAN_DURATION;
     int current_loan_duration;
@@ -34,7 +36,7 @@ void change_loan_duration(int library_socket) {
 
         switch (scelta) {
             case 1:
-                request_type = CHANGE_LOAN_DURATION;
+                request_type = CHANGE_LOAN_DURATION; //indico al server che voglio cambiare la durata
                 if ((send(library_socket, (int *)&request_type, sizeof(request_type), 0)) == -1) {
                     perror("Error to send request type message");
                     return;
@@ -56,6 +58,7 @@ void change_loan_duration(int library_socket) {
     }
 }
 
+//Funzione che visualizza prestiti scaduti
 void get_expired_loan(int library_socket) {
     char *message;
     int request_type = GET_EXPIRED_LOAN;
@@ -65,7 +68,7 @@ void get_expired_loan(int library_socket) {
     }
     message = recv_and_compose_segmented_string(library_socket);
 
-    // parse the JSON data
+    // parsing dei dati JSON con cJSON
     cJSON *json = cJSON_Parse(message);
     if (json == NULL) {
         const char *error_ptr = cJSON_GetErrorPtr();
@@ -95,6 +98,7 @@ void get_expired_loan(int library_socket) {
     free(message);
 }
 
+//Funzione che riceve dati segmentati e concatena in un'unica stringa
 char *recv_and_compose_segmented_string(int library_socket) {
     char buffer[MAX_REQUEST_BUFFER_LENGTH];
     char *message = NULL;

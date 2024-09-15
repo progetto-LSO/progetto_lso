@@ -298,6 +298,7 @@ void handle_return_book(int client_socket)
     send(client_socket, (int *)&query_result, sizeof(query_result), 0);
 }
 
+//Riceve una richiesta dal client per modificare la durata del prestito attraverso un socket
 void handle_change_loan_duration(int client_socket)
 {
     int new_duration;
@@ -310,6 +311,7 @@ void handle_change_loan_duration(int client_socket)
     change_loan_duration(new_duration);
 }
 
+//Gestisce la richiesta dal client per ottenere i prestiti scaduti e invia il risultato tramite un socket
 void handle_get_exiped_loan(int client_socket)
 {
     PGresult *result;
@@ -320,6 +322,7 @@ void handle_get_exiped_loan(int client_socket)
     }
 }
 
+//Gestisce la richiesta del client per ottenere la durata attuale del prestito
 void handle_get_current_loan_duration(int client_socket)
 {
     int current_duration;
