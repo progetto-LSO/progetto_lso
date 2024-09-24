@@ -221,6 +221,12 @@ Queste funzioni sono necessarie per gestire l'invio e la ricezione di dati di lu
 		\attribute{isbn: \texttt{TEXT}}
 	\end{class}
 
+	% system settings table
+	\begin{class}[text width=8cm]{systemsettings}{0,2.5}
+		\attribute{key: \texttt{TEXT PRIMARY KEY}}
+		\attribute{value: \texttt{TEXT}}
+	\end{class}
+
 	% Relationships
 	\association{user}{}{~\qquad0..*}{loan}{1..1\qquad~}{}
 	\association{book}{}{0..*\qquad~}{loan}{~\qquad1..1}{}
@@ -266,14 +272,14 @@ Il file \texttt{docker-compose.yml} definisce una configurazione di \texttt{dock
 	\item Database
 	\item Client
 	\item Server
-\end{itemize} 
+\end{itemize}
 
 \subsubsection*{Database}
 Il database usa l'immagine di \textit{postgres} per creare il container e specifica dei \textit{volumes} tra cui:
- \begin{itemize}
+\begin{itemize}
 	\item \texttt{db\_data} per la persistenza dei dati
 	\item monta la directory locale dove sono contenute le query che verranno eseguite alla creazione del database.
- \end{itemize}
+\end{itemize}
 Il database si collega alla rete Docker "\textit{library}" senza specifare un indirizzo IP poiché non è strettamente necessario per il suo funzionamento, dato che Docker ne gestisce automaticamente l'assegnazione.
 
 \subsubsection*{Client}
@@ -286,6 +292,50 @@ Al server viene assegnato un indirizzo IP specifico che servirà al client per s
 \subsection{Network}
 La sezione \texttt{networks} definisce una rete che i servizi utilizzano per comunicare tra loro.\sskip
 Specifica il tipo di rete a "\textit{bridge}", un tipo di rete che collega i container tra loro e all'host Docker.
+
+\chapter{Client Librario (Funzionalità aggiuntiva)}
+È stato deciso di implementare un client dedicato per il libraio per semplificare la gestione dei prestiti.
+
+\begin{enumerate}
+	\item \textbf{Modifica della Durata del Prestito}:
+	      è possibile modificare rapidamente la durata del prestito dei libri. Verrà mostrato il valore attuale della durata, e si potrà scegliere se cambiarlo o meno.
+
+	\item \textbf{Visualizzazione degli Utenti con Prestiti Scaduti}:
+	      Il client permette di vedere gli utenti che hanno prestiti scaduti. Verranno mostrati lo username, l'ISBN del libro e la data di scadenza.
+\end{enumerate}
+
+\noindent
+In \texttt{library\_admin} ci sono 2 directory principali:
+\begin{itemize}
+	\item \texttt{include}:
+	      \begin{itemize}
+		      \item \texttt{library\_admin.h}
+		      \item \texttt{socket.h}
+	      \end{itemize}
+	\item src:
+	      \begin{itemize}
+		      \item \texttt{library\_admin.c}
+		      \item \texttt{socket.c}
+		      \item \texttt{main.c}
+	      \end{itemize}
+\end{itemize}
+
+\section{Modifiche effettuate}
+Sono stati aggiunti altri valori all'enumerazione \texttt{RequestType}:
+\begin{itemize}
+	\item \texttt{CHANGE\_LOAN\_DURATION}: per modificare la durata del prestito di un libro
+	\item \texttt{GET\_EXPIRED\_LOAN}: per ottenere la lista dei prestiti scaduti
+	\item \texttt{GET\_CURRENT\_LOAN\_DURATION}: per ottenere la durata corrente di un prestito
+\end{itemize}
+
+\subsection{Gestione della durata del prestito}
+La funzione \texttt{handle\_change\_loan\_duration} permette la gestione dinamica della durata di un prestito.
+
+\subsection{Rilevazione prestiti scaduti}
+La funzione \texttt{handle\_get\_expired\_loan} consente di identificare e restituire i prestiti scaduti. Utilizza la libreria libpq di PostgreSQL per eseguire una query al database e restituire i risultati in formato segmentato.
+
+\subsection{Gestione della durata corrente del prestito}
+La funzione \texttt{handle\_get\_current\_loan\_duration} permette di ottenere la durata attuale di un prestito e inviarla al client in formato intero.
 
 
 \end{document}
